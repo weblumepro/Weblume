@@ -871,14 +871,27 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   grid-template-columns: 1fr 1fr;
   height: 100vh;
   align-items: stretch;
-  background-image:
+}
+/* Layered overlays sit on top of the img element */
+.stats-bg-img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.stats-bg-img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.stats-bg-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
     linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 14%),
     linear-gradient(to bottom, rgba(255,255,255,0) 60%, rgba(255,255,255,1) 100%),
-    linear-gradient(to right, rgba(5,3,15,0.62) 0%, rgba(5,3,15,0.38) 48%, rgba(5,3,15,0.14) 100%),
-    url('BG.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+    linear-gradient(to right, rgba(5,3,15,0.62) 0%, rgba(5,3,15,0.38) 48%, rgba(5,3,15,0.14) 100%);
 }
 .stats-panel {
   padding: 0 9%;
@@ -887,6 +900,8 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
+  z-index: 1;
 }
 .stats-eyebrow {
   font-size: 0.66rem;
@@ -1309,6 +1324,9 @@ footer p { font-size: 0.82rem; color: var(--muted); }
 
   <div class="page-bg">
   <section class="stats-section">
+    <div class="stats-bg-img">
+      <img src="BG.png" alt="" aria-hidden="true" fetchpriority="high">
+    </div>
     <div class="stats-panel">
       <p class="stats-eyebrow">By the numbers</p>
       <h2 class="stats-heading">Professional websites,<br>without the agency price tag.</h2>
