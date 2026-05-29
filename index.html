@@ -1838,10 +1838,11 @@ observeAnimations();
     white.style.opacity = 0;
   }
 
-  // Drip-load all frames in idle batches — no eager first-frame load needed
-  // since landingpage.png shows through the transparent canvas at rest
-  function loadBatch(start) {
-    const end = Math.min(start + 8, TOTAL);
+  // Load first 30 frames immediately so animation is usable right away.
+  // Remaining frames trickle in via idle callbacks in the background.
+  function loadBatch(start, eager) {
+    const batchSize = eager ? 30 : 10;
+    const end = Math.min(start + batchSize - 1, TOTAL);
     for (let i = start; i <= end; i++) {
       const img = new Image();
       img.src = PREFIX + pad(i) + '.png';
@@ -1849,13 +1850,13 @@ observeAnimations();
     }
     if (end < TOTAL) {
       if (window.requestIdleCallback) {
-        requestIdleCallback(() => loadBatch(end + 1), { timeout: 3000 });
+        requestIdleCallback(() => loadBatch(end + 1, false), { timeout: 4000 });
       } else {
-        setTimeout(() => loadBatch(end + 1), 80);
+        setTimeout(() => loadBatch(end + 1, false), 100);
       }
     }
   }
-  loadBatch(1);
+  loadBatch(1, true); // first 30 eager, rest idle
 
   resize();
   window.addEventListener('scroll', tick,   { passive: true });
