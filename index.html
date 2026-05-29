@@ -1076,8 +1076,47 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   transition: transform 0.68s cubic-bezier(0.22,1,0.36,1), opacity 0.68s ease;
 }
 .wp-card.wp-active {
-  cursor: default;
+  cursor: pointer;
   box-shadow: 0 16px 40px rgba(0,0,0,0.50), 0 0 0 1px rgba(255,255,255,0.08);
+}
+/* Hover affordance — make it obvious the centre card opens the live site */
+.wp-card.wp-active:hover {
+  transform: translate(-50%,-50%) scale(1.045) !important;
+  box-shadow: 0 28px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.16);
+}
+/* Bottom scrim on the active card so the cue stays legible over any image */
+.wp-card.wp-active::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 45%;
+  background: linear-gradient(to top, rgba(0,0,0,0.72), transparent);
+  z-index: 1;
+  pointer-events: none;
+}
+/* "Visit site" pill, shown on the centre card so the click target is obvious */
+.wp-card.wp-active::after {
+  content: "Visit site \2197";
+  position: absolute;
+  left: 50%; bottom: 1.4rem;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: inline-flex; align-items: center;
+  padding: 9px 17px;
+  border-radius: 999px;
+  background: rgba(20,20,20,0.55);
+  border: 1px solid rgba(255,255,255,0.34);
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.74rem; font-weight: 700;
+  letter-spacing: 0.03em;
+  pointer-events: none;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+.wp-card.wp-active:hover::after {
+  background: #fff;
+  color: #111;
+  transform: translateX(-50%) translateY(-3px);
 }
 .wp-card img {
   width: 100%; height: 100%;
