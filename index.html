@@ -1756,7 +1756,7 @@ observeAnimations();
 // --- Hero frame-sequence animation ---
 (function () {
   const TOTAL  = 151;
-  const PREFIX = 'intro/ezgif-726ef5ecaac96f27-png-split/ezgif-frame-';
+  const PREFIX = 'introJPG/ezgif-frame-';
 
   const zone   = document.querySelector('.hero-zone');
   const fixed  = document.getElementById('heroFixed');
@@ -1850,7 +1850,7 @@ observeAnimations();
     const end = Math.min(start + batchSize - 1, TOTAL);
     for (let i = start; i <= end; i++) {
       const img = new Image();
-      img.src = PREFIX + pad(i) + '.png';
+      img.src = PREFIX + pad(i) + '.jpg';
       frames[i - 1] = img;
     }
     if (end < TOTAL) {
