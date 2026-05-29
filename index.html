@@ -6,6 +6,8 @@
 <title>Weblume — Premium Web Design</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="landingpage.webp" as="image" fetchpriority="high">
+<link rel="preload" href="introJPG/ezgif-frame-001.jpg" as="image">
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
 <style>
@@ -771,7 +773,7 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   z-index: 50;
   overflow: hidden;
   pointer-events: none;
-  background: url('landingpage.png') 63% 40% / cover no-repeat;
+  background: url('landingpage.webp') 63% 40% / cover no-repeat;
 }
 #heroCanvas {
   position: absolute;
@@ -1327,7 +1329,7 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   <div class="page-bg">
   <section class="stats-section">
     <div class="stats-bg-img">
-      <img src="BG.png" alt="" aria-hidden="true" fetchpriority="high">
+      <img src="BG.webp" alt="" aria-hidden="true" fetchpriority="high">
     </div>
     <div class="stats-panel">
       <p class="stats-eyebrow">By the numbers</p>
@@ -1368,28 +1370,28 @@ footer p { font-size: 0.82rem; color: var(--muted); }
 
   <section class="work-preview-section" id="work-preview">
     <div class="wp-backgrounds">
-      <div class="wp-bg" style="background-image:url('matchaBackground.png')"></div>
-      <div class="wp-bg" style="background-image:url('PagodaBackground.png')"></div>
+      <div class="wp-bg" style="background-image:url('matchaBackground.webp')"></div>
+      <div class="wp-bg" style="background-image:url('PagodaBackground.webp')"></div>
       <!-- COMMENTED OUT — restore when ready:
-      <div class="wp-bg" style="background-image:url('foodinatorBackground.png')"></div>
-      <div class="wp-bg" style="background-image:url('inskitchenBackground.png')"></div>
+      <div class="wp-bg" style="background-image:url('foodinatorBackground.webp')"></div>
+      <div class="wp-bg" style="background-image:url('inskitchenBackground.webp')"></div>
       -->
     </div>
     <div class="wp-dim"></div>
     <div class="wp-top"><p class="wp-eyebrow">Recent work</p></div>
     <div class="wp-stage">
       <div class="wp-card" data-href="https://glowhourmatcha.vercel.app/">
-        <img src="matchaCard.png" alt="Glow Hour Matcha" loading="lazy" decoding="async">
+        <img src="matchaCard.webp" alt="Glow Hour Matcha" loading="lazy" decoding="async">
       </div>
       <div class="wp-card" data-href="https://pagoda-restaurant-website.vercel.app/">
-        <img src="pagodaCard.png" alt="Pagoda Restaurant" loading="lazy" decoding="async">
+        <img src="pagodaCard.webp" alt="Pagoda Restaurant" loading="lazy" decoding="async">
       </div>
       <!-- COMMENTED OUT — restore when ready:
       <div class="wp-card" data-href="https://foodinator-pro.vercel.app/">
-        <img src="foodinatorCard.png" alt="Foodinator" loading="lazy" decoding="async">
+        <img src="foodinatorCard.webp" alt="Foodinator" loading="lazy" decoding="async">
       </div>
       <div class="wp-card" data-href="https://inskitchen.vercel.app/">
-        <img src="insKitchenCard.png" alt="Ink Kitchen" loading="lazy" decoding="async">
+        <img src="insKitchenCard.webp" alt="Ink Kitchen" loading="lazy" decoding="async">
       </div>
       -->
     </div>
@@ -1556,7 +1558,7 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   </div>
   <div class="work-grid stagger">
     <a class="work-card fade-up" href="https://glowhourmatcha.vercel.app/" target="_blank" rel="noopener">
-      <div class="work-img-wrap"><img src="glowhourmatcha.png" alt="Glow Hour Matcha" loading="lazy" decoding="async" onerror="this.parentElement.style.background='#1c1c1c'"></div>
+      <div class="work-img-wrap"><img src="glowhourmatcha.webp" alt="Glow Hour Matcha" loading="lazy" decoding="async" onerror="this.parentElement.style.background='#1c1c1c'"></div>
       <div class="work-info">
         <h3>Glow Hour Matcha</h3>
         <p>Modern design with animations and featured products. Best matcha popup in Ottawa.</p>
@@ -1564,7 +1566,7 @@ footer p { font-size: 0.82rem; color: var(--muted); }
       </div>
     </a>
     <a class="work-card fade-up" href="https://uogeegees.recreationradar.com/" target="_blank" rel="noopener">
-      <div class="work-img-wrap"><img src="UOlogo.PNG" alt="GeeGees Fitness" loading="lazy" decoding="async" onerror="this.parentElement.style.background='#1c1c1c'"></div>
+      <div class="work-img-wrap"><img src="UOlogo.webp" alt="GeeGees Fitness" loading="lazy" decoding="async" onerror="this.parentElement.style.background='#1c1c1c'"></div>
       <div class="work-info">
         <h3>GeeGees Fitness Page</h3>
         <p>Clean, multiplatform-compatible fitness application employed by the University of Ottawa.</p>
@@ -1572,7 +1574,7 @@ footer p { font-size: 0.82rem; color: var(--muted); }
       </div>
     </a>
     <a class="work-card fade-up" href="https://recreationradar.com/" target="_blank" rel="noopener">
-      <div class="work-img-wrap"><img src="recradar2.PNG" alt="Rec Radar" loading="lazy" decoding="async" onerror="this.parentElement.style.background='#1c1c1c'"></div>
+      <div class="work-img-wrap"><img src="recradar2.webp" alt="Rec Radar" loading="lazy" decoding="async" onerror="this.parentElement.style.background='#1c1c1c'"></div>
       <div class="work-info">
         <h3>Rec Radar</h3>
         <p>Minimal, modern design showcasing visuals and content clearly. Built for a tech platform.</p>
@@ -1580,7 +1582,7 @@ footer p { font-size: 0.82rem; color: var(--muted); }
       </div>
     </a>
     <a class="work-card fade-up" href="https://pagoda-restaurant-website.vercel.app/" target="_blank" rel="noopener">
-      <div class="work-img-wrap"><img src="pagoda.PNG" alt="Pagoda Restaurant" loading="lazy" decoding="async" onerror="this.parentElement.style.background='#1c1c1c'"></div>
+      <div class="work-img-wrap"><img src="pagoda.webp" alt="Pagoda Restaurant" loading="lazy" decoding="async" onerror="this.parentElement.style.background='#1c1c1c'"></div>
       <div class="work-info">
         <h3>Pagoda Restaurant</h3>
         <p>Restaurant website with a polished, modern layout. Top-rated Chinese food in Kirkland Lake.</p>
@@ -1589,7 +1591,7 @@ footer p { font-size: 0.82rem; color: var(--muted); }
     </a>
     <!-- COMMENTED OUT — restore when ready:
     <a class="work-card fade-up" href="https://foodinator-pro.vercel.app/" target="_blank" rel="noopener">
-      <div class="work-img-wrap"><img src="foodinatorCard.png" alt="Foodinator" loading="lazy" decoding="async" onerror="this.parentElement.style.background='#1c1c1c'"></div>
+      <div class="work-img-wrap"><img src="foodinatorCard.webp" alt="Foodinator" loading="lazy" decoding="async" onerror="this.parentElement.style.background='#1c1c1c'"></div>
       <div class="work-info">
         <h3>Foodinator</h3>
         <p>Modern food ordering experience with a bold, app-like design built for today's customers.</p>
@@ -1597,7 +1599,7 @@ footer p { font-size: 0.82rem; color: var(--muted); }
       </div>
     </a>
     <a class="work-card fade-up" href="https://inskitchen.vercel.app/" target="_blank" rel="noopener">
-      <div class="work-img-wrap"><img src="insKitchenCard.png" alt="Ink Kitchen" loading="lazy" decoding="async" onerror="this.parentElement.style.background='#1c1c1c'"></div>
+      <div class="work-img-wrap"><img src="insKitchenCard.webp" alt="Ink Kitchen" loading="lazy" decoding="async" onerror="this.parentElement.style.background='#1c1c1c'"></div>
       <div class="work-info">
         <h3>Ink Kitchen</h3>
         <p>Bold, editorial design for a bold dining concept. A premium restaurant site built to impress.</p>
@@ -1634,7 +1636,7 @@ footer p { font-size: 0.82rem; color: var(--muted); }
       </div>
     </div>
     <div class="team-card fade-up">
-      <img src="Zach.png" alt="Zach Kranabetter" class="team-photo" loading="lazy" decoding="async" onerror="this.style.display='none'">
+      <img src="Zach.webp" alt="Zach Kranabetter" class="team-photo" loading="lazy" decoding="async" onerror="this.style.display='none'">
       <div class="team-info">
         <h3>Zach Kranabetter</h3>
         <div class="team-role">Designer</div>
