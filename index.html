@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="landingpage.webp" as="image" fetchpriority="high">
-<link rel="preload" href="introJPG/ezgif-frame-001.jpg" as="image">
+<link rel="preload" href="introJPG/ezgif-frame-001.jpg" as="image" media="(min-width: 701px)">
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
 <style>
@@ -1254,6 +1254,28 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   .cta-strip { padding: 2.5rem 1.75rem; }
   .form-row { grid-template-columns: 1fr; }
 
+  /* --- Mobile hero: static background image + text, no scroll animation --- */
+  .hero-zone { display: none; }
+  .hero-fixed {
+    position: relative;
+    height: calc(100vh - 70px);
+    height: calc(100svh - 70px);
+    min-height: 440px;
+    background-position: 60% 38%;
+  }
+  #heroCanvas, .hero-white { display: none; }
+  .hero-left-shade {
+    width: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.66) 0%, rgba(0,0,0,0.28) 55%, rgba(0,0,0,0.34) 100%);
+  }
+  .hero-content {
+    width: 100%;
+    justify-content: flex-end;
+    padding: 0 1.5rem 4rem;
+  }
+  .hero-heading { font-size: 2.7rem; }
+  .hero-sub { font-size: 1.05rem; max-width: 100%; }
+
   .stats-section {
     grid-template-columns: 1fr;
     height: auto;
@@ -1270,18 +1292,26 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   .wp-nav-r { right: 0.5rem; }
 
   .process-section::after { height: 80px; }
-  .process-section { height: auto; min-height: 100vh; padding: 4rem 5%; }
-  .process-header { margin-bottom: 2.5rem; }
+  .process-section { height: auto; min-height: auto; padding: 3.5rem 5%; }
+  .process-header { margin-bottom: 2rem; }
   .process-steps { grid-template-columns: 1fr; border-left: none; border-right: none; }
   .process-step {
-    padding: 2.5rem 5%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.85rem;
+    row-gap: 0.35rem;
+    padding: 1.15rem 0.25rem;
     border-right: none;
     border-left: none;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
+    border-bottom: 1px solid rgba(60,40,22,0.10);
   }
   .process-step:first-child { border-left: none; }
   .process-step:last-child { border-bottom: none; }
-  .step-desc { max-width: 100%; }
+  .step-num { font-size: 2.1rem; margin-bottom: 0; opacity: 0.22; }
+  .step-pill { margin-bottom: 0; }
+  .step-title { margin-bottom: 0; font-size: 1.05rem; flex-basis: 100%; }
+  .step-desc { display: none; }
 }
 </style>
 </head>
@@ -1769,6 +1799,10 @@ observeAnimations();
   const nav      = document.getElementById('mainNav');
   const stats  = document.querySelector('.stats-section');
   if (!zone || !fixed || !canvas) return;
+
+  // Mobile: no scroll animation — hero is a static background + text (CSS-driven).
+  // Bail before attaching any scroll/resize handlers so nothing toggles the hero.
+  if (window.matchMedia('(max-width: 700px)').matches) return;
 
   const ctx = canvas.getContext('2d');
   const frames = new Array(TOTAL);
