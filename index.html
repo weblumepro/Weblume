@@ -2028,22 +2028,68 @@ function goTestimonial(i) {
 })();
 
 // --- Form ---
-function submitForm() {
+// Get a free access key (no account needed) at https://web3forms.com —
+// enter weblumepro@gmail.com as the destination, then paste the key below.
+const WEB3FORMS_ACCESS_KEY = '91f65b09-438e-4f2a-9ce8-01b8534ad66d';
+
+async function submitForm() {
   const name = document.getElementById('b-name').value.trim();
   const email = document.getElementById('b-email').value.trim();
+  const phone = document.getElementById('b-phone').value.trim();
+  const biz = document.getElementById('b-biz').value.trim();
+  const service = document.getElementById('b-service').value;
+  const msg = document.getElementById('b-msg').value.trim();
   const status = document.getElementById('formStatus');
+  const btn = document.querySelector('.submit-btn');
+
   if (!name || !email) {
     status.textContent = 'Please fill in your name and email to continue.';
     status.className = 'form-status error';
     return;
   }
-  status.textContent = "Thanks, " + name + "! We'll be in touch within one business day.";
-  status.className = 'form-status success';
-  ['b-name','b-email','b-phone','b-biz','b-msg'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  document.getElementById('b-service').value = '';
+
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  status.textContent = '';
+  status.className = 'form-status';
+
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: 'New booking request from ' + name,
+        from_name: 'Weblume Booking Form',
+        name: name,
+        email: email,
+        phone: phone || 'Not provided',
+        business: biz || 'Not provided',
+        service: service || 'Not specified',
+        message: msg || 'No message provided'
+      })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      status.textContent = "Thanks, " + name + "! We'll be in touch within one business day.";
+      status.className = 'form-status success';
+      ['b-name','b-email','b-phone','b-biz','b-msg'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      document.getElementById('b-service').value = '';
+    } else {
+      throw new Error(data.message || 'Submission failed');
+    }
+  } catch (err) {
+    status.textContent = 'Something went wrong sending your request. Please email us directly at weblumepro@gmail.com.';
+    status.className = 'form-status error';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+  }
 }
 </script>
 <!-- Vercel Web Analytics -->
