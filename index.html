@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Weblume — Premium Web Design</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="landingpage.webp" as="image" fetchpriority="high">
@@ -94,11 +96,11 @@ nav.main-nav.scrolled {
   transition: opacity 0.2s;
 }
 .nav-logo:hover { opacity: 0.8; }
-.nav-logo .dot {
-  width: 9px; height: 9px; border-radius: 50%;
-  background: #0f0d2a;
+.nav-logo .logo-img {
+  width: 30px; height: 30px;
+  object-fit: contain;
   display: inline-block;
-  box-shadow: 0 0 0 2px rgba(15,13,42,0.12);
+  transform: translateY(-3px);
 }
 .nav-links { display: flex; align-items: center; gap: 0.25rem; list-style: none; }
 .nav-links li a {
@@ -533,9 +535,11 @@ footer {
 }
 .footer-logo {
   font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
+  display: inline-flex; align-items: center; gap: 0.5rem;
   background: linear-gradient(135deg, var(--accent), var(--accent3));
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
+.footer-logo-img { width: 26px; height: 26px; object-fit: contain; transform: translateY(-3px); }
 footer p { font-size: 0.82rem; color: var(--muted); }
 
 /* SCROLL ANIMATIONS — GPU-composited only (opacity + transform = no layout/paint) */
@@ -1368,7 +1372,7 @@ footer p { font-size: 0.82rem; color: var(--muted); }
 
 <nav class="main-nav" id="mainNav">
   <div class="nav-logo" onclick="showPage('home')">
-    <span class="dot"></span> Weblume
+    <img src="logo.png" alt="Weblume" class="logo-img"> Weblume
   </div>
   <ul class="nav-links">
     <li><a href="#" onclick="showPage('home');return false;" id="nl-home" class="active">Home</a></li>
@@ -1770,7 +1774,7 @@ footer p { font-size: 0.82rem; color: var(--muted); }
 </div>
 
 <footer>
-  <div class="footer-logo">✦ Weblume</div>
+  <div class="footer-logo"><img src="logo.png" alt="Weblume" class="footer-logo-img"> Weblume</div>
   <p>© 2025 Weblume. Based in Ottawa, Canada.</p>
   <p>Premium web design for brands that mean business.</p>
 </footer>
