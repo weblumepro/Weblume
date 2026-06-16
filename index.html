@@ -87,6 +87,13 @@ nav.main-nav.scrolled {
   background: rgba(255, 255, 255, 0.98);
   box-shadow: 0 1px 16px rgba(0,0,0,0.05);
 }
+/* Transparent nav while the Reviews section is in view (toggled by the
+   diagonal-transition JS). Wins over .scrolled via later source order. */
+nav.main-nav.nav-clear {
+  background: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+}
 .nav-logo {
   font-family: 'Syne', sans-serif;
   font-weight: 800; font-size: 1.25rem;
@@ -685,6 +692,79 @@ footer p { font-size: 0.82rem; color: var(--muted); }
 }
 /* Keep dots above the fade */
 .t-nav { position: relative; z-index: 1; }
+
+/* ============================================================
+   Diagonal cross-transition: How it works -> Reviews
+   Layout is INERT by default (sections flow normally). JS adds
+   body.diag-on only on desktop with motion allowed, which turns
+   on the pinned/scrubbed stage. Mobile / reduced-motion / no-JS
+   all keep the original stacked scroll.
+   ============================================================ */
+.diag-on .diag-pin {
+  position: relative;
+  height: 200vh;            /* 100vh visible stage + 100vh of pinned scroll */
+}
+.diag-on .diag-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #f4ede3; /* cream base = the How it works surface */
+}
+/* The Reviews surface. Its opacity tracks scroll progress, so the whole
+   surface gradients cream -> white in step with the content swap.
+   White base with a very faint emoji-texture image (reviewsBG.png). */
+.diag-on .diag-dark {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none;
+  opacity: var(--diag-p, 0);
+  background-color: #ffffff;
+  /* White overlay sits in FRONT of the image to knock it down to a very
+     low opacity (~10%). Raise the 0.90 alpha to fade the image further,
+     lower it to make the image stronger. */
+  background-image:
+    linear-gradient(rgba(255,255,255,0.90), rgba(255,255,255,0.90)),
+    url('reviewsBG.png');
+  background-repeat: no-repeat;
+  background-position: center, center;
+  background-size: cover, cover;
+}
+/* Sections are transparent shells over the ONE shared stage background, so
+   only their content moves — it reads as content leaving / arriving rather
+   than a coloured card sliding over. The backdrop always fills up under the
+   nav, so there is no card edge and no corner gap. */
+.diag-on .diag-stage > .process-section,
+.diag-on .diag-stage > .testimonials-section {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  will-change: transform, opacity;
+}
+.diag-on .diag-stage > .process-section { z-index: 3; }
+.diag-on .diag-stage > .testimonials-section { z-index: 4; }
+/* The per-section edge gradients would move with the content and look like
+   stray bands — the stage owns the blends instead while pinned. */
+.diag-on .diag-stage > .process-section::before,
+.diag-on .diag-stage > .process-section::after,
+.diag-on .diag-stage > .testimonials-section::after { display: none; }
+/* Top blend into the dark Recent Work section (fades out as we transition) */
+.diag-on .diag-stage::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 180px;
+  background: linear-gradient(to bottom, rgba(10,7,4,0.32), transparent);
+  pointer-events: none; z-index: 2;
+  opacity: calc(1 - var(--diag-p, 0));
+}
+/* Bottom blend: dark Reviews surface -> cream CTA (fades in as Reviews settles) */
+.diag-on .diag-stage::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 300px;
+  background: linear-gradient(to bottom, transparent, #f4ede3);
+  pointer-events: none; z-index: 2;
+  opacity: var(--diag-p, 0);
+}
 
 /* CTA SECTION */
 .cta-section {
@@ -1485,6 +1565,9 @@ footer p { font-size: 0.82rem; color: var(--muted); }
     </div>
   </section>
 
+  <div class="diag-pin" id="diagPin">
+   <div class="diag-stage" id="diagStage">
+    <div class="diag-dark" aria-hidden="true"></div>
   <section class="process-section" id="process">
     <div class="process-header">
       <p class="process-eyebrow">How it works</p>
@@ -1560,6 +1643,8 @@ footer p { font-size: 0.82rem; color: var(--muted); }
       -->
     </div>
   </section>
+   </div>
+  </div>
 
   <!-- CTA -->
   <section class="cta-section" id="cta">
@@ -1950,6 +2035,60 @@ observeAnimations();
   window.addEventListener('resize', resize, { passive: true });
   window._heroTick = tick;
   tick();
+})();
+
+// --- Diagonal cross-transition: How it works -> Reviews (desktop only) ---
+(function () {
+  if (window.matchMedia('(max-width: 700px)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const pin   = document.getElementById('diagPin');
+  const stage = document.getElementById('diagStage');
+  const proc  = document.getElementById('process');
+  const revs  = document.getElementById('testimonials');
+  const nav   = document.getElementById('mainNav');
+  if (!pin || !stage || !proc || !revs) return;
+
+  document.body.classList.add('diag-on');
+
+  let ticking = false;
+
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function update() {
+    ticking = false;
+    const vh    = window.innerHeight;
+    const total = pin.offsetHeight - vh;          // scroll distance while pinned
+    const top   = pin.getBoundingClientRect().top;
+    let p = total > 0 ? (-top) / total : 0;
+    p = Math.min(1, Math.max(0, p));
+    const e = easeInOutCubic(p);
+
+    // How it works content -> drifts to the top-left and fades out
+    proc.style.transform = 'translate3d(' + (-38 * e).toFixed(2) + '%, ' + (-42 * e).toFixed(2) + '%, 0)';
+    proc.style.opacity   = (1 - e).toFixed(3);
+
+    // Reviews content -> drifts in from the bottom-right and fades in
+    const inv = 1 - e;
+    revs.style.transform = 'translate3d(' + (100 * inv).toFixed(2) + '%, ' + (100 * inv).toFixed(2) + '%, 0)';
+    revs.style.opacity   = e.toFixed(3);
+
+    // One progress value drives the dark backdrop fade-in + both edge blends
+    stage.style.setProperty('--diag-p', e.toFixed(3));
+
+    // Go transparent once the Reviews surface dominates the viewport
+    if (nav) nav.classList.toggle('nav-clear', e > 0.6);
+  }
+
+  function onScroll() {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  update();
 })();
 
 // --- Carousel (legacy — removed from DOM, kept as no-op to avoid reference errors) ---
