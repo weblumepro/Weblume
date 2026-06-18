@@ -596,7 +596,14 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
+  /* White with a very faint emoji-texture image (white overlay knocks it to ~10%) */
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.90), rgba(255,255,255,0.90)),
+    url('reviewsBG.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   position: relative;
   overflow: hidden;
   padding: 0 2rem;
@@ -694,77 +701,42 @@ footer p { font-size: 0.82rem; color: var(--muted); }
 .t-nav { position: relative; z-index: 1; }
 
 /* ============================================================
-   Diagonal cross-transition: How it works -> Reviews
-   Layout is INERT by default (sections flow normally). JS adds
+   Pinned horizontal "How it works" deck.
+   Layout is INERT by default (slides flow normally). JS adds
    body.diag-on only on desktop with motion allowed, which turns
-   on the pinned/scrubbed stage. Mobile / reduced-motion / no-JS
-   all keep the original stacked scroll.
+   on the pinned deck. After the last slide the pin releases and
+   the page scrolls normally into the Reviews section below.
+   Mobile / reduced-motion / no-JS keep the stacked scroll.
    ============================================================ */
 .diag-on .diag-pin {
   position: relative;
-  height: 200vh;            /* 100vh visible stage + 100vh of pinned scroll */
+  height: 300vh;            /* 100vh stage + 200vh pinned scroll for the 4 deck slides */
 }
 .diag-on .diag-stage {
   position: sticky;
   top: 0;
   height: 100vh;
   overflow: hidden;
-  background-color: #f4ede3; /* cream base = the How it works surface */
-}
-/* The Reviews surface. Its opacity tracks scroll progress, so the whole
-   surface gradients cream -> white in step with the content swap.
-   White base with a very faint emoji-texture image (reviewsBG.png). */
-.diag-on .diag-dark {
-  position: absolute; inset: 0; z-index: 1;
-  pointer-events: none;
-  opacity: var(--diag-p, 0);
-  background-color: #ffffff;
-  /* White overlay sits in FRONT of the image to knock it down to a very
-     low opacity (~10%). Raise the 0.90 alpha to fade the image further,
-     lower it to make the image stronger. */
+  /* Glassy lavender-gray surface: highlight + shaded corner + reflection streaks */
+  background-color: #e7eaf3;
   background-image:
-    linear-gradient(rgba(255,255,255,0.90), rgba(255,255,255,0.90)),
-    url('reviewsBG.png');
-  background-repeat: no-repeat;
-  background-position: center, center;
-  background-size: cover, cover;
+    radial-gradient(130% 90% at 15% -10%, rgba(255,255,255,0.70), rgba(255,255,255,0) 55%),
+    radial-gradient(120% 100% at 110% 120%, rgba(180,192,224,0.50), rgba(180,192,224,0) 60%),
+    linear-gradient(122deg, rgba(255,255,255,0) 28%, rgba(255,255,255,0.38) 41%, rgba(255,255,255,0) 49%),
+    linear-gradient(122deg, rgba(255,255,255,0) 60%, rgba(255,255,255,0.22) 69%, rgba(255,255,255,0) 76%);
 }
-/* Sections are transparent shells over the ONE shared stage background, so
-   only their content moves — it reads as content leaving / arriving rather
-   than a coloured card sliding over. The backdrop always fills up under the
-   nav, so there is no card edge and no corner gap. */
-.diag-on .diag-stage > .process-section,
-.diag-on .diag-stage > .testimonials-section {
+/* The deck section fills the pinned stage */
+.diag-on .diag-stage > .process-section {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   background: transparent;
-  will-change: transform, opacity;
+  z-index: 1;
+  will-change: transform;
 }
-.diag-on .diag-stage > .process-section { z-index: 3; }
-.diag-on .diag-stage > .testimonials-section { z-index: 4; }
-/* The per-section edge gradients would move with the content and look like
-   stray bands — the stage owns the blends instead while pinned. */
 .diag-on .diag-stage > .process-section::before,
-.diag-on .diag-stage > .process-section::after,
-.diag-on .diag-stage > .testimonials-section::after { display: none; }
-/* Top blend into the dark Recent Work section (fades out as we transition) */
-.diag-on .diag-stage::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 180px;
-  background: linear-gradient(to bottom, rgba(10,7,4,0.32), transparent);
-  pointer-events: none; z-index: 2;
-  opacity: calc(1 - var(--diag-p, 0));
-}
-/* Bottom blend: dark Reviews surface -> cream CTA (fades in as Reviews settles) */
-.diag-on .diag-stage::after {
-  content: '';
-  position: absolute; bottom: 0; left: 0; right: 0; height: 300px;
-  background: linear-gradient(to bottom, transparent, #f4ede3);
-  pointer-events: none; z-index: 2;
-  opacity: var(--diag-p, 0);
-}
+.diag-on .diag-stage > .process-section::after { display: none; }
 
 /* CTA SECTION */
 .cta-section {
@@ -1271,98 +1243,220 @@ footer p { font-size: 0.82rem; color: var(--muted); }
 }
 .wp-view-all:hover { background: rgba(255,255,255,0.20); border-color: rgba(255,255,255,0.60); }
 
-/* Process / How it works — redesigned */
+/* Process / How it works — 4-slide deck.
+   Mobile: slides stack vertically. Desktop (.diag-on): a 400vw horizontal
+   row scrubbed/snapped by the pinned-scroll JS. */
 .process-section {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #f4ede3;
+  background-color: #e7eaf3;
+  background-image:
+    radial-gradient(130% 90% at 15% -10%, rgba(255,255,255,0.70), rgba(255,255,255,0) 55%),
+    radial-gradient(120% 100% at 110% 120%, rgba(180,192,224,0.50), rgba(180,192,224,0) 60%),
+    linear-gradient(122deg, rgba(255,255,255,0) 28%, rgba(255,255,255,0.38) 41%, rgba(255,255,255,0) 49%),
+    linear-gradient(122deg, rgba(255,255,255,0) 60%, rgba(255,255,255,0.22) 69%, rgba(255,255,255,0) 76%);
   position: relative;
   overflow: hidden;
-  padding: 0 5%;
 }
-.process-header {
-  text-align: center;
-  margin-bottom: 4.5rem;
-  z-index: 1;
-  padding: 0;
-  border: none;
+/* Drifting colour aura behind the glass — soft brand-toned blobs in slow motion */
+.hiw-aura {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
 }
+.hiw-aura span {
+  position: absolute; border-radius: 50%; filter: blur(70px); will-change: transform;
+}
+.hiw-aura span:nth-child(1) {
+  width: 46vw; height: 46vw; left: -8%; top: -14%;
+  background: rgba(99,102,241,0.45); animation: hiwFloat1 17s ease-in-out infinite;
+}
+.hiw-aura span:nth-child(2) {
+  width: 40vw; height: 40vw; right: -6%; bottom: -18%;
+  background: rgba(124,58,237,0.40); animation: hiwFloat2 21s ease-in-out infinite;
+}
+.hiw-aura span:nth-child(3) {
+  width: 34vw; height: 34vw; left: 42%; top: 30%;
+  background: rgba(129,140,248,0.32); animation: hiwFloat3 19s ease-in-out infinite;
+}
+@keyframes hiwFloat1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(9%,7%) scale(1.14); } }
+@keyframes hiwFloat2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-8%,-6%) scale(1.1); } }
+@keyframes hiwFloat3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(6%,-9%) scale(1.16); } }
+
+/* Twinkling starfield behind the cards — two offset layers pulsing out of sync */
+.hiw-sparkle {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
+}
+.hiw-sparkle::before, .hiw-sparkle::after {
+  content: ''; position: absolute; inset: 0;
+  background-repeat: no-repeat;
+}
+.hiw-sparkle::before {
+  background-image:
+    radial-gradient(1.6px 1.6px at 12% 18%, #fff, transparent),
+    radial-gradient(1.3px 1.3px at 27% 62%, #fff, transparent),
+    radial-gradient(2px 2px at 41% 30%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 55% 78%, #fff, transparent),
+    radial-gradient(1.8px 1.8px at 68% 22%, #fff, transparent),
+    radial-gradient(1.3px 1.3px at 80% 58%, #fff, transparent),
+    radial-gradient(1.6px 1.6px at 90% 35%, #fff, transparent),
+    radial-gradient(1.4px 1.4px at 8% 80%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 33% 12%, #fff, transparent),
+    radial-gradient(1.7px 1.7px at 62% 48%, #fff, transparent),
+    radial-gradient(1.3px 1.3px at 74% 88%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 18% 45%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 95% 15%, #fff, transparent);
+  animation: hiwTwinkle 3.6s ease-in-out infinite;
+}
+.hiw-sparkle::after {
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 35%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 38% 82%, #fff, transparent),
+    radial-gradient(1.9px 1.9px at 50% 25%, #fff, transparent),
+    radial-gradient(1.3px 1.3px at 64% 65%, #fff, transparent),
+    radial-gradient(1.6px 1.6px at 78% 40%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 88% 85%, #fff, transparent),
+    radial-gradient(1.7px 1.7px at 14% 60%, #fff, transparent),
+    radial-gradient(1.3px 1.3px at 30% 92%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 45% 55%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 58% 14%, #fff, transparent),
+    radial-gradient(1.8px 1.8px at 72% 30%, #fff, transparent),
+    radial-gradient(1.3px 1.3px at 92% 52%, #fff, transparent),
+    radial-gradient(1.4px 1.4px at 6% 28%, #fff, transparent);
+  animation: hiwTwinkle 4.8s ease-in-out infinite;
+  animation-delay: 1.2s;
+}
+@keyframes hiwTwinkle {
+  0%, 100% { opacity: 0.18; }
+  50%      { opacity: 0.78; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hiw-sparkle::before, .hiw-sparkle::after { animation: none; opacity: 0.4; }
+  .hiw-aura span { animation: none; }
+}
+.hiw-track { display: flex; flex-direction: column; }
+.hiw-slide {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6.5rem 8%;
+  box-sizing: border-box;
+}
+/* Slide content sits on a white card; the cream stage shows behind it */
+.hiw-inner {
+  width: 100%;
+  max-width: 760px;
+  background: #ffffff;
+  border-radius: 22px;
+  padding: clamp(2rem, 4vw, 3.5rem);
+  box-sizing: border-box;
+  box-shadow: 0 24px 70px rgba(60,40,22,0.12), 0 2px 8px rgba(60,40,22,0.05);
+}
+
+/* Intro slide */
+.hiw-intro .hiw-inner { max-width: 760px; margin: 0 auto; text-align: center; }
 .process-eyebrow {
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(44,31,20,0.45);
-  margin-bottom: 1.1rem;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase; color: rgba(44,31,20,0.45); margin-bottom: 1.1rem;
 }
 .process-heading {
   font-family: 'Syne', sans-serif;
-  font-size: clamp(2rem, 3.5vw, 3rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-  color: #2c1f14;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; color: #2c1f14;
 }
-.process-steps {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  width: 100%;
-  max-width: 1080px;
-  z-index: 1;
-  position: relative;
-  border-top: 1px solid rgba(60,40,22,0.14);
-  border-bottom: 1px solid rgba(60,40,22,0.14);
+.hiw-intro-sub {
+  font-size: clamp(1rem, 1.5vw, 1.25rem); line-height: 1.7;
+  color: rgba(44,31,20,0.6); max-width: 600px; margin: 1.6rem auto 0;
 }
-.process-step {
-  padding: 3.2rem 3.2rem;
-  border-right: 1px solid rgba(60,40,22,0.10);
-  position: relative;
-  transition: background 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+.hiw-scrollhint {
+  margin-top: 3rem; font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: rgba(44,31,20,0.5);
+  display: inline-flex; align-items: center; gap: 0.6rem;
 }
-.process-step:first-child { border-left: 1px solid rgba(60,40,22,0.10); }
-.process-step:hover { background: rgba(60,40,22,0.04); }
+.hiw-scrollhint span { display: inline-block; animation: hiwArrow 1.4s ease-in-out infinite; }
+@keyframes hiwArrow { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(7px); } }
+
+/* Step slides */
+.hiw-step { text-align: left; }
+/* Top row — small gradient number in the top-left, icon in the top-right */
+.step-visual {
+  display: flex; flex-direction: row; align-items: center;
+  justify-content: space-between; margin-bottom: 1.6rem;
+}
+.step-icon {
+  width: 46px; height: 46px; display: inline-flex;
+  align-items: center; justify-content: center;
+  border-radius: 14px; color: var(--accent);
+  background: rgba(124,58,237,0.08);
+  border: 1px solid rgba(124,58,237,0.15);
+}
+.step-icon svg { width: 24px; height: 24px; }
 .step-num {
-  display: block;
+  order: -1;                 /* number sits at the start (left) of the row */
   font-family: 'Syne', sans-serif;
-  font-size: clamp(3.2rem, 5vw, 5rem);
-  font-weight: 800;
-  letter-spacing: -0.05em;
-  line-height: 1;
-  margin-bottom: 1.8rem;
-  color: #2c1f14;
-  opacity: 0.18;
+  font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1;
+  background: linear-gradient(135deg, var(--accent), var(--accent3));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .step-pill {
-  display: inline-block;
-  padding: 0.26rem 0.72rem;
-  background: rgba(60,40,22,0.07);
-  border: 1px solid rgba(60,40,22,0.15);
-  border-radius: 100px;
-  font-size: 0.60rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(44,31,20,0.55);
-  margin-bottom: 1.4rem;
+  display: inline-block; padding: 0.3rem 0.8rem;
+  background: rgba(60,40,22,0.07); border: 1px solid rgba(60,40,22,0.15);
+  border-radius: 100px; font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase; color: rgba(44,31,20,0.55);
+  margin-bottom: 1.3rem;
 }
-.step-title {
+.hiw-step .step-title {
   font-family: 'Syne', sans-serif;
-  font-size: clamp(1.15rem, 1.7vw, 1.45rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  color: #2c1f14;
-  margin-bottom: 0.85rem;
+  font-size: clamp(1.7rem, 3.2vw, 2.7rem);
+  font-weight: 800; letter-spacing: -0.02em; line-height: 1.12;
+  color: #2c1f14; margin: 0.4rem 0 1.1rem;
 }
-.step-desc {
-  font-size: 0.875rem;
-  line-height: 1.78;
-  color: rgba(44,31,20,0.52);
-  max-width: 260px;
+.step-lead {
+  font-size: clamp(1rem, 1.4vw, 1.18rem); line-height: 1.7;
+  color: rgba(44,31,20,0.62); max-width: 460px; margin-bottom: 1.6rem;
 }
+.step-outcome {
+  display: inline-flex; align-items: baseline; gap: 0.55rem;
+  font-size: 0.92rem; font-weight: 700; color: var(--accent);
+  letter-spacing: -0.01em;
+}
+.step-outcome span { font-weight: 800; }
+.step-cta {
+  margin-top: 1.9rem;
+  display: inline-flex; align-items: center;
+  padding: 0.8rem 1.5rem; border: none; border-radius: 100px; cursor: pointer;
+  font-family: 'Syne', sans-serif; font-size: 0.92rem; font-weight: 700;
+  color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent3));
+  box-shadow: 0 8px 24px rgba(124,58,237,0.32);
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+.step-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(124,58,237,0.42); }
+
+/* Slide-progress bar (desktop deck only) */
+.hiw-progress {
+  display: none;
+  position: absolute; bottom: 2.4rem; left: 50%; transform: translateX(-50%);
+  width: min(240px, 42vw); height: 4px; border-radius: 99px;
+  background: rgba(60,40,22,0.15); overflow: hidden; z-index: 6;
+}
+.hiw-progress-fill {
+  display: block; height: 100%; width: 0%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent), var(--accent3));
+}
+
+/* Desktop horizontal deck — slides are narrower than the viewport so the
+   previous / next cards peek in on the sides (must match SLIDE_W in the JS) */
+.diag-on .hiw-track {
+  flex-direction: row; width: 256vw; height: 100%; will-change: transform;  /* 64vw x 4 */
+}
+.diag-on .hiw-slide { flex: 0 0 64vw; width: 64vw; min-height: 0; height: 100%; padding: 0 1.4vw; }
+.diag-on .hiw-inner { max-width: none; will-change: transform, opacity; transform-origin: center; transition: box-shadow 0.45s ease; }
+/* The centred card gets an accent glow so it clearly stands out from the peeks */
+.diag-on .hiw-inner.is-centered {
+  box-shadow: 0 30px 90px rgba(79,70,229,0.28), 0 4px 16px rgba(60,40,22,0.08);
+}
+.diag-on .hiw-progress { display: block; }
+/* Keep step text readable instead of stretching across the whole wide card */
+.diag-on .hiw-step .step-body { max-width: 640px; }
 
 /* =============================================
    RESPONSIVE
@@ -1412,33 +1506,16 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   .wp-nav-r { right: 0.5rem; }
 
   .process-section::after { height: 80px; }
-  .process-section { height: auto; min-height: auto; padding: 3.5rem 5%; }
-  .process-header { margin-bottom: 2rem; }
-  .process-steps { grid-template-columns: 1fr; border-left: none; border-right: none; }
-  .process-step {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    column-gap: 0.85rem;
-    row-gap: 0.35rem;
-    padding: 1.15rem 0.25rem;
-    border-right: none;
-    border-left: none;
-    border-bottom: 1px solid rgba(60,40,22,0.10);
-  }
-  .process-step:first-child { border-left: none; }
-  .process-step:last-child { border-bottom: none; }
-  .step-num { font-size: 2.1rem; margin-bottom: 0; opacity: 0.22; }
-  .step-pill { margin-bottom: 0; }
-  .step-title { margin-bottom: 0; font-size: 1.05rem; flex-basis: 100%; }
-  .step-desc {
-    display: block;
-    flex-basis: 100%;
-    max-width: 100%;
-    margin-top: 0.4rem;
-    font-size: 0.85rem;
-    line-height: 1.6;
-  }
+  /* How it works deck stacks into compact sections on mobile (no horizontal scroll) */
+  .hiw-slide { min-height: auto; padding: 3rem 7% 3.25rem; border-bottom: 1px solid rgba(60,40,22,0.10); }
+  .hiw-slide:last-child { border-bottom: none; }
+  .hiw-intro .hiw-inner { text-align: left; margin: 0; }
+  .hiw-scrollhint { display: none; }
+  .step-visual { margin-bottom: 1.1rem; }
+  .step-icon { width: 40px; height: 40px; }
+  .hiw-step .step-title { font-size: 1.5rem; }
+  .step-lead { font-size: 0.98rem; margin-bottom: 1.2rem; max-width: 100%; }
+  .step-cta { margin-top: 1.4rem; }
 
   /* Trim the empty gap between reviews and the CTA */
   .testimonials-section { height: auto; min-height: auto; padding: 4rem 2rem 3rem; }
@@ -1567,33 +1644,82 @@ footer p { font-size: 0.82rem; color: var(--muted); }
 
   <div class="diag-pin" id="diagPin">
    <div class="diag-stage" id="diagStage">
-    <div class="diag-dark" aria-hidden="true"></div>
   <section class="process-section" id="process">
-    <div class="process-header">
-      <p class="process-eyebrow">How it works</p>
-      <h2 class="process-heading">From idea to live site,<br>in three simple steps.</h2>
+    <div class="hiw-aura" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="hiw-sparkle" aria-hidden="true"></div>
+    <div class="hiw-track" id="hiwTrack">
+
+      <!-- Slide 1 — intro -->
+      <div class="hiw-slide hiw-intro">
+        <div class="hiw-inner">
+          <p class="process-eyebrow">How it works</p>
+          <h2 class="process-heading">From idea to live site,<br>in three simple steps.</h2>
+          <p class="hiw-intro-sub">A clear, low-pressure process from your first call to launch day — here's exactly what to expect at each stage.</p>
+          <div class="hiw-scrollhint">Scroll to explore <span>&#8594;</span></div>
+        </div>
+      </div>
+
+      <!-- Slide 2 — step 01 -->
+      <div class="hiw-slide">
+        <div class="hiw-inner hiw-step">
+          <div class="step-visual">
+            <span class="step-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3 21l2-5.6A8.5 8.5 0 1 1 21 11.5z"/></svg>
+            </span>
+            <span class="step-num">01</span>
+          </div>
+          <div class="step-body">
+            <span class="step-pill">Day 1</span>
+            <h3 class="step-title">Book a free call</h3>
+            <p class="step-lead">Tell us about your business and what you're looking for. No pressure, no commitment — just a conversation.</p>
+            <p class="step-outcome"><span>→</span> You leave with a clear plan &amp; a fixed quote</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3 — step 02 -->
+      <div class="hiw-slide">
+        <div class="hiw-inner hiw-step">
+          <div class="step-visual">
+            <span class="step-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </span>
+            <span class="step-num">02</span>
+          </div>
+          <div class="step-body">
+            <span class="step-pill">Days 2 – 14</span>
+            <h3 class="step-title">We design &amp; build</h3>
+            <p class="step-lead">We handle everything — design, copy, and testing. You review, we refine. Done in 7–14 days.</p>
+            <p class="step-outcome"><span>→</span> A site built around your brand</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4 — step 03 -->
+      <div class="hiw-slide">
+        <div class="hiw-inner hiw-step">
+          <div class="step-visual">
+            <span class="step-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </span>
+            <span class="step-num">03</span>
+          </div>
+          <div class="step-body">
+            <span class="step-pill">Day 14+</span>
+            <h3 class="step-title">You go live</h3>
+            <p class="step-lead">Your site launches and we stay in the picture. Updates, tweaks, and monthly support — all handled.</p>
+            <button class="step-cta" onclick="showPage('booking')">Book your free call →</button>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <div class="process-steps">
-      <div class="process-step">
-        <span class="step-num">01</span>
-        <span class="step-pill">Day 1</span>
-        <h3 class="step-title">Book a free call</h3>
-        <p class="step-desc">Tell us about your business and what you're looking for. No pressure, no commitment — just a conversation.</p>
-      </div>
-      <div class="process-step">
-        <span class="step-num">02</span>
-        <span class="step-pill">Days 2 – 14</span>
-        <h3 class="step-title">We design &amp; build</h3>
-        <p class="step-desc">We handle everything — design, copy, and testing. You review, we refine. Done in 7–14 days.</p>
-      </div>
-      <div class="process-step">
-        <span class="step-num">03</span>
-        <span class="step-pill">Day 14+</span>
-        <h3 class="step-title">You go live</h3>
-        <p class="step-desc">Your site launches and we stay in the picture. Updates, tweaks, and monthly support — handled.</p>
-      </div>
+    <div class="hiw-progress" id="hiwProgress" aria-hidden="true">
+      <span class="hiw-progress-fill" id="hiwProgressFill"></span>
     </div>
   </section>
+   </div>
+  </div>
 
   <!-- TESTIMONIALS -->
   <section class="testimonials-section" id="testimonials">
@@ -1643,8 +1769,6 @@ footer p { font-size: 0.82rem; color: var(--muted); }
       -->
     </div>
   </section>
-   </div>
-  </div>
 
   <!-- CTA -->
   <section class="cta-section" id="cta">
@@ -2037,57 +2161,141 @@ observeAnimations();
   tick();
 })();
 
-// --- Diagonal cross-transition: How it works -> Reviews (desktop only) ---
+// --- Pinned horizontal "How it works" deck (desktop only) ---
 (function () {
   if (window.matchMedia('(max-width: 700px)').matches) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const pin   = document.getElementById('diagPin');
-  const stage = document.getElementById('diagStage');
-  const proc  = document.getElementById('process');
-  const revs  = document.getElementById('testimonials');
-  const nav   = document.getElementById('mainNav');
-  if (!pin || !stage || !proc || !revs) return;
+  const track = document.getElementById('hiwTrack');
+  const progressFill = document.getElementById('hiwProgressFill');
+  if (!pin || !track) return;
 
   document.body.classList.add('diag-on');
 
+  // Cache per-slide elements for the carousel depth + parallax effects
+  const slideEls = Array.prototype.slice.call(track.children);
+  const cardEls  = slideEls.map(function (s) { return s.querySelector('.hiw-inner'); });
+
+  // The whole pinned scroll is the 4-slide deck. After the last slide the pin
+  // releases and the page scrolls normally into the Reviews section below.
+  const SLIDES  = 4;
+  const SLIDE_W = 64;                 // vw per slide (must match CSS .diag-on .hiw-slide)
+  const SIDE_M  = (100 - SLIDE_W) / 2; // centers the active card; neighbours peek on the sides
+
   let ticking = false;
 
+  function clamp01(t) { return Math.min(1, Math.max(0, t)); }
   function easeInOutCubic(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+  // One wheel = one slide is enforced by the wheel handler below; this just
+  // eases the glide between two adjacent slides during the snap scroll.
+  function snapEase(frac) {
+    return easeInOutCubic(clamp01(frac));
   }
 
   function update() {
     ticking = false;
-    const vh    = window.innerHeight;
-    const total = pin.offsetHeight - vh;          // scroll distance while pinned
+    const total = pin.offsetHeight - window.innerHeight; // scroll distance while pinned
     const top   = pin.getBoundingClientRect().top;
-    let p = total > 0 ? (-top) / total : 0;
-    p = Math.min(1, Math.max(0, p));
-    const e = easeInOutCubic(p);
+    const p = clamp01(total > 0 ? (-top) / total : 0);
 
-    // How it works content -> drifts to the top-left and fades out
-    proc.style.transform = 'translate3d(' + (-38 * e).toFixed(2) + '%, ' + (-42 * e).toFixed(2) + '%, 0)';
-    proc.style.opacity   = (1 - e).toFixed(3);
+    // Horizontal deck (snap one slide at a time across the whole pin)
+    const span = SLIDES - 1;                 // 3 transitions
+    const x    = p * span;                   // 0 .. 3 (integer = a slide centred)
+    const seg  = Math.min(span - 1, Math.floor(x));
+    const pos  = seg + snapEase(x - seg);    // eased track position
+    // Center the active card in the viewport; neighbours peek on either side
+    track.style.transform = 'translate3d(' + (SIDE_M - pos * SLIDE_W).toFixed(3) + 'vw, 0, 0)';
 
-    // Reviews content -> drifts in from the bottom-right and fades in
-    const inv = 1 - e;
-    revs.style.transform = 'translate3d(' + (100 * inv).toFixed(2) + '%, ' + (100 * inv).toFixed(2) + '%, 0)';
-    revs.style.opacity   = e.toFixed(3);
+    // Carousel depth: the centred card is full size & bright; neighbours shrink, dim, and blur.
+    for (let i = 0; i < slideEls.length; i++) {
+      const dist = Math.abs(i - pos);               // distance from centre
+      const ad   = Math.min(dist, 1);
+      if (cardEls[i]) {
+        cardEls[i].style.transform = 'scale(' + (1 - ad * 0.12).toFixed(3) + ')';
+        cardEls[i].style.opacity   = (1 - ad * 0.55).toFixed(3);
+        cardEls[i].style.filter    = ad > 0.01 ? 'blur(' + (ad * 2).toFixed(1) + 'px)' : 'none';
+        cardEls[i].classList.toggle('is-centered', dist < 0.5);
+      }
+    }
 
-    // One progress value drives the dark backdrop fade-in + both edge blends
-    stage.style.setProperty('--diag-p', e.toFixed(3));
-
-    // Go transparent once the Reviews surface dominates the viewport
-    if (nav) nav.classList.toggle('nav-clear', e > 0.6);
+    // Progress bar fills as you move through the deck
+    if (progressFill) progressFill.style.width = (pos / span * 100).toFixed(2) + '%';
   }
 
   function onScroll() {
     if (!ticking) { ticking = true; requestAnimationFrame(update); }
   }
 
+  // --- One wheel gesture = one slide -------------------------------------
+  // Each anchor is a scroll position for one of the 4 slides. While the deck
+  // is pinned we intercept the wheel and smooth-scroll to exactly the
+  // next/previous anchor (locked until it lands). Past the last slide the
+  // wheel is released, so the page scrolls normally into Reviews.
+  const anchorP = [0, 1 / 3, 2 / 3, 1];   // the 4 deck slides
+  let locked = false;
+  let lockTimer = null;
+  let rafId = null;
+
+  function nearestAnchor(p) {
+    let best = 0, bestD = Infinity;
+    for (let i = 0; i < anchorP.length; i++) {
+      const d = Math.abs(anchorP[i] - p);
+      if (d < bestD) { bestD = d; best = i; }
+    }
+    return best;
+  }
+
+  // Custom eased scroll tween (gives us control over duration per transition,
+  // unlike the browser's native smooth-scroll which felt abrupt).
+  function animateScrollTo(toY, duration) {
+    cancelAnimationFrame(rafId);
+    const fromY = window.scrollY;
+    const dist  = toY - fromY;
+    const begin = performance.now();
+    locked = true;
+    (function step(now) {
+      const t = Math.min(1, (now - begin) / duration);
+      window.scrollTo(0, Math.round(fromY + dist * easeInOutCubic(t)));
+      if (t < 1) rafId = requestAnimationFrame(step);
+      else locked = false;
+    })(begin);
+    clearTimeout(lockTimer);
+    lockTimer = setTimeout(function () { locked = false; }, duration + 250); // safety unlock
+  }
+
+  function snapTo(toIndex, startY, total) {
+    animateScrollTo(Math.round(startY + anchorP[toIndex] * total), 600);
+  }
+
+  function onWheel(ev) {
+    const rect  = pin.getBoundingClientRect();
+    const total = pin.offsetHeight - window.innerHeight;
+    const vh    = window.innerHeight;
+    // epsilon so the engaged state doesn't flicker at the exact top/bottom edges
+    const engaged = total > 0 && rect.top <= 1 && rect.bottom >= vh - 1;
+    if (!engaged) return;   // outside the deck: scroll normally
+
+    if (locked) { ev.preventDefault(); return; }
+
+    const startY = window.scrollY + rect.top;        // page Y where the pin locks
+    const p      = clamp01((-rect.top) / total);
+    const dir    = ev.deltaY > 0 ? 1 : (ev.deltaY < 0 ? -1 : 0);
+    if (dir === 0) return;
+
+    const cur    = nearestAnchor(p);
+    const target = cur + dir;
+    if (target < 0 || target >= anchorP.length) return;  // past the ends: release to normal scroll
+
+    ev.preventDefault();
+    snapTo(target, startY, total);
+  }
+
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll, { passive: true });
+  window.addEventListener('wheel', onWheel, { passive: false });
   update();
 })();
 
