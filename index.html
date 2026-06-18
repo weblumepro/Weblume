@@ -1520,9 +1520,14 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   flex-direction: row; width: 256vw; height: 100%; will-change: transform;  /* 64vw x 4 */
 }
 .diag-on .hiw-slide { flex: 0 0 64vw; width: 64vw; min-height: 0; height: 100%; padding: 0 1.4vw; }
-.diag-on .hiw-inner { max-width: none; will-change: transform, opacity; transform-origin: center; transition: box-shadow 0.45s ease; }
+.diag-on .hiw-inner {
+  max-width: none; will-change: transform, opacity; transform-origin: center;
+  filter: blur(2px);
+  transition: filter 0.28s ease, box-shadow 0.45s ease;
+}
 /* The centred card gets an accent glow so it clearly stands out from the peeks */
 .diag-on .hiw-inner.is-centered {
+  filter: none;
   box-shadow: 0 16px 48px rgba(79,70,229,0.08), 0 2px 8px rgba(0,0,0,0.10);
 }
 .diag-on .hiw-progress { display: block; }
@@ -2303,7 +2308,6 @@ observeAnimations();
       if (cardEls[i]) {
         cardEls[i].style.transform = 'scale(' + (1 - ad * 0.12).toFixed(3) + ')';
         cardEls[i].style.opacity   = (1 - ad * 0.55).toFixed(3);
-        cardEls[i].style.filter    = ad > 0.01 ? 'blur(' + (ad * 2).toFixed(1) + 'px)' : 'none';
         cardEls[i].classList.toggle('is-centered', dist < 0.5);
       }
     }
@@ -2315,6 +2319,7 @@ observeAnimations();
   }
 
   function onScroll() {
+    if (locked) return;  // animation drives its own update loop — skip to avoid double rAF
     if (!ticking) { ticking = true; requestAnimationFrame(update); }
   }
 
@@ -2329,91 +2334,129 @@ observeAnimations();
   let rafId = null;
   let currentTarget = 0;  // tracks the intended anchor index so interruption doesn't skip slides
 
-  function animateScrollTo(toY, duration) {
+  // useCSS = true  → within-deck: page scroll is invisible (sticky stage stays put),
+  //                   so we jump scrollY instantly and animate only the track via CSS.
+  //                   Zero layout thrashing, runs on GPU compositor.
+  // useCSS = false → reviews / pre-pin: page scroll IS visible, use a lean rAF loop
+  //                   (no update() inside, so no forced-layout per frame).
+  function animateScrollTo(toY, duration, useCSS) {
     cancelAnimationFrame(rafId);
-    const fromY = window.scrollY;
-    const dist  = toY - fromY;
-    if (Math.abs(dist) < 2) { locked = false; return; }
-    const begin = performance.now();
-    locked = true;
-    (function step(now) {
-      const t = Math.min(1, (now - begin) / duration);
-      window.scrollTo(0, Math.round(fromY + dist * easeOutQuart(t)));
-      if (t < 1) rafId = requestAnimationFrame(step);
-      else locked = false;
-    })(begin);
     clearTimeout(lockTimer);
-    lockTimer = setTimeout(function () { locked = false; }, duration + 60);
+    locked = true;
+
+    if (useCSS) {
+      var rect   = pin.getBoundingClientRect();
+      var total  = pin.offsetHeight - window.innerHeight;
+      var pinTop = window.scrollY + rect.top;
+      var p      = clamp01(total > 0 ? (toY - pinTop) / total : 0);
+      var span   = SLIDES - 1;
+      var tp     = p * span;  // target horizontal position 0..3
+
+      // One CSS transition replaces the entire rAF loop — compositor thread only
+      track.style.transition = 'transform ' + duration + 'ms cubic-bezier(0.22, 1, 0.36, 1)';
+      track.style.transform  = 'translate3d(' + (SIDE_M - tp * SLIDE_W).toFixed(3) + 'vw, 0, 0)';
+
+      // Update card states once; CSS filter transition handles the blur
+      var ci = Math.round(tp);
+      for (var i = 0; i < cardEls.length; i++) {
+        var ad = Math.min(Math.abs(i - tp), 1);
+        if (cardEls[i]) {
+          cardEls[i].style.transform = 'scale(' + (1 - ad * 0.12).toFixed(3) + ')';
+          cardEls[i].style.opacity   = (1 - ad * 0.55).toFixed(3);
+          cardEls[i].classList.toggle('is-centered', i === ci);
+        }
+      }
+      setOverlay(Math.min(SLIDES - 1, ci));
+      if (progressFill) progressFill.style.width = (tp / span * 100).toFixed(2) + '%';
+
+      window.scrollTo(0, Math.round(toY));  // instant — invisible because sticky stage is fixed
+
+      lockTimer = setTimeout(function () {
+        track.style.transition = '';
+        locked = false;
+        update();
+      }, duration + 60);
+
+    } else {
+      // Visible page scroll (reviews / pre-pin) — rAF loop, no update() to avoid thrashing
+      var fromY = window.scrollY;
+      var dist  = toY - fromY;
+      if (Math.abs(dist) < 2) { locked = false; return; }
+      var begin = performance.now();
+      (function step(now) {
+        var t = Math.min(1, (now - begin) / duration);
+        window.scrollTo(0, Math.round(fromY + dist * easeOutQuart(t)));
+        if (t < 1) { rafId = requestAnimationFrame(step); }
+        else { locked = false; update(); }
+      })(begin);
+      lockTimer = setTimeout(function () { locked = false; }, duration + 80);
+    }
   }
 
   function onWheel(ev) {
-    const rect  = pin.getBoundingClientRect();
-    const total = pin.offsetHeight - window.innerHeight;
+    var rect  = pin.getBoundingClientRect();
+    var total = pin.offsetHeight - window.innerHeight;
     if (total <= 0) return;
-    const vh     = window.innerHeight;
-    const pinTop = window.scrollY + rect.top;
+    var vh     = window.innerHeight;
+    var pinTop = window.scrollY + rect.top;
 
-    const anchorsY = SLIDE_FRAC.map(function (f) { return pinTop + f * total; });
+    var anchorsY = SLIDE_FRAC.map(function (f) { return pinTop + f * total; });
     anchorsY.push(pinTop + total + vh);  // Reviews (index 4)
 
-    const y  = window.scrollY;
-    const lo = anchorsY[0] - vh;  // one viewport above the pin entry
-    const hi = anchorsY[anchorsY.length - 1];
+    var y  = window.scrollY;
+    var lo = anchorsY[0] - vh;
+    var hi = anchorsY[anchorsY.length - 1];
     if (y < lo - 1 || y > hi + 1) return;
 
-    const dir = ev.deltaY > 0 ? 1 : (ev.deltaY < 0 ? -1 : 0);
+    var dir = ev.deltaY > 0 ? 1 : (ev.deltaY < 0 ? -1 : 0);
     if (dir === 0) return;
 
-    // Mid-animation interruption: advance/reverse the tracked target instead of
-    // recalculating from mid-scroll position (prevents skipping slides)
     if (locked) {
-      const newTarget = currentTarget + dir;
+      var newTarget = currentTarget + dir;
       cancelAnimationFrame(rafId);
       clearTimeout(lockTimer);
       locked = false;
       if (newTarget < 0) {
         ev.preventDefault();
         currentTarget = -1;
-        animateScrollTo(Math.round(anchorsY[0] - vh), 260);
+        animateScrollTo(Math.round(anchorsY[0] - vh), 260, false);
         return;
       }
       if (newTarget >= anchorsY.length) return;
       ev.preventDefault();
       currentTarget = newTarget;
-      animateScrollTo(Math.round(anchorsY[newTarget]), newTarget === 4 ? 260 : 240);
+      animateScrollTo(Math.round(anchorsY[newTarget]), newTarget === 4 ? 260 : 220, newTarget !== 4);
       return;
     }
 
-    // Approaching from recent works: one downward scroll snaps into the first slide
+    // Approaching from recent works: one scroll snaps to first slide
     if (y < anchorsY[0] - 1) {
       if (dir < 0) return;
       ev.preventDefault();
       currentTarget = 0;
-      animateScrollTo(Math.round(anchorsY[0]), 260);
+      animateScrollTo(Math.round(anchorsY[0]), 260, false);
       return;
     }
 
-    // Find the nearest anchor from current scroll position
-    let cur = 0, bestD = Infinity;
-    for (let i = 0; i < anchorsY.length; i++) {
-      const d = Math.abs(anchorsY[i] - y);
+    var cur = 0, bestD = Infinity;
+    for (var i = 0; i < anchorsY.length; i++) {
+      var d = Math.abs(anchorsY[i] - y);
       if (d < bestD) { bestD = d; cur = i; }
     }
     currentTarget = cur;
 
-    const target = cur + dir;
-    // Scrolling up from the first slide: snap back above the pin into recent works
+    var target = cur + dir;
     if (target < 0) {
       ev.preventDefault();
       currentTarget = -1;
-      animateScrollTo(Math.round(anchorsY[0] - vh), 260);
+      animateScrollTo(Math.round(anchorsY[0] - vh), 260, false);
       return;
     }
     if (target >= anchorsY.length) return;
 
     ev.preventDefault();
     currentTarget = target;
-    animateScrollTo(Math.round(anchorsY[target]), target === 4 ? 260 : 240);
+    animateScrollTo(Math.round(anchorsY[target]), target === 4 ? 260 : 220, target !== 4);
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
