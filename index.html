@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FGX93JFHFH"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-FGX93JFHFH');
+</script>
 <title>Weblume — Premium Web Design Ottawa</title>
 <meta name="description" content="Weblume builds premium custom websites for Ottawa businesses — designed, built, and live in 7–14 days. Starting at $50/month. Book a free consultation.">
 
@@ -2127,6 +2135,12 @@ function loadCalendly() {
   s.async = true;
   document.head.appendChild(s);
 }
+// Track when someone actually completes a Calendly booking
+window.addEventListener('message', function (e) {
+  if (e.data && e.data.event === 'calendly.event_scheduled') {
+    if (typeof gtag !== 'undefined') gtag('event', 'booking_scheduled', { event_category: 'booking', event_label: 'calendly' });
+  }
+});
 
 // --- Page navigation ---
 const pages = ['home','team','work','prices','booking'];
@@ -2650,6 +2664,7 @@ async function submitForm() {
     if (data.success) {
       status.textContent = "Thanks, " + name + "! We'll be in touch within one business day.";
       status.className = 'form-status success';
+      if (typeof gtag !== 'undefined') gtag('event', 'form_submission', { event_category: 'booking', event_label: 'contact_form' });
       ['b-name','b-email','b-phone','b-biz','b-msg'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
