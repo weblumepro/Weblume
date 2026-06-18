@@ -2234,19 +2234,10 @@ observeAnimations();
   // is pinned we intercept the wheel and smooth-scroll to exactly the
   // next/previous anchor (locked until it lands). Past the last slide the
   // wheel is released, so the page scrolls normally into Reviews.
-  const anchorP = [0, 1 / 3, 2 / 3, 1];   // the 4 deck slides
+  const SLIDE_FRAC = [0, 1 / 3, 2 / 3, 1];   // pin-scroll fractions for the 4 slides
   let locked = false;
   let lockTimer = null;
   let rafId = null;
-
-  function nearestAnchor(p) {
-    let best = 0, bestD = Infinity;
-    for (let i = 0; i < anchorP.length; i++) {
-      const d = Math.abs(anchorP[i] - p);
-      if (d < bestD) { bestD = d; best = i; }
-    }
-    return best;
-  }
 
   // Custom eased scroll tween (gives us control over duration per transition,
   // unlike the browser's native smooth-scroll which felt abrupt).
@@ -2266,31 +2257,40 @@ observeAnimations();
     lockTimer = setTimeout(function () { locked = false; }, duration + 250); // safety unlock
   }
 
-  function snapTo(toIndex, startY, total) {
-    animateScrollTo(Math.round(startY + anchorP[toIndex] * total), 600);
-  }
-
   function onWheel(ev) {
     const rect  = pin.getBoundingClientRect();
     const total = pin.offsetHeight - window.innerHeight;
-    const vh    = window.innerHeight;
-    // epsilon so the engaged state doesn't flicker at the exact top/bottom edges
-    const engaged = total > 0 && rect.top <= 1 && rect.bottom >= vh - 1;
-    if (!engaged) return;   // outside the deck: scroll normally
+    if (total <= 0) return;
+    const vh     = window.innerHeight;
+    const pinTop = window.scrollY + rect.top;     // document Y of the pin's top
+
+    // Snap targets: the 4 slides within the pin, then Reviews one viewport below it
+    const anchorsY = SLIDE_FRAC.map(function (f) { return pinTop + f * total; });
+    anchorsY.push(pinTop + total + vh);           // Reviews fills the viewport
+
+    const y  = window.scrollY;
+    const lo = anchorsY[0];
+    const hi = anchorsY[anchorsY.length - 1];
+    if (y < lo - 1 || y > hi + 1) return;          // outside the deck→Reviews range: scroll normally
 
     if (locked) { ev.preventDefault(); return; }
 
-    const startY = window.scrollY + rect.top;        // page Y where the pin locks
-    const p      = clamp01((-rect.top) / total);
-    const dir    = ev.deltaY > 0 ? 1 : (ev.deltaY < 0 ? -1 : 0);
+    const dir = ev.deltaY > 0 ? 1 : (ev.deltaY < 0 ? -1 : 0);
     if (dir === 0) return;
 
-    const cur    = nearestAnchor(p);
+    // nearest anchor to the current scroll position
+    let cur = 0, bestD = Infinity;
+    for (let i = 0; i < anchorsY.length; i++) {
+      const d = Math.abs(anchorsY[i] - y);
+      if (d < bestD) { bestD = d; cur = i; }
+    }
     const target = cur + dir;
-    if (target < 0 || target >= anchorP.length) return;  // past the ends: release to normal scroll
+    if (target < 0 || target >= anchorsY.length) return;  // past the ends: release to normal scroll
 
     ev.preventDefault();
-    snapTo(target, startY, total);
+    // The last slide <-> Reviews step (3 <-> 4) is a full-viewport move — keep it fast.
+    const toReviews = (cur === 4 || target === 4);
+    animateScrollTo(Math.round(anchorsY[target]), toReviews ? 300 : 600);
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
