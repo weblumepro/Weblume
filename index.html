@@ -717,13 +717,8 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   top: 0;
   height: 100vh;
   overflow: hidden;
-  /* Glassy lavender-gray surface: highlight + shaded corner + reflection streaks */
-  background-color: #e7eaf3;
-  background-image:
-    radial-gradient(130% 90% at 15% -10%, rgba(255,255,255,0.70), rgba(255,255,255,0) 55%),
-    radial-gradient(120% 100% at 110% 120%, rgba(180,192,224,0.50), rgba(180,192,224,0) 60%),
-    linear-gradient(122deg, rgba(255,255,255,0) 28%, rgba(255,255,255,0.38) 41%, rgba(255,255,255,0) 49%),
-    linear-gradient(122deg, rgba(255,255,255,0) 60%, rgba(255,255,255,0.22) 69%, rgba(255,255,255,0) 76%);
+  background-color: #06060a;
+  background-image: none;
 }
 /* The deck section fills the pinned stage */
 .diag-on .diag-stage > .process-section {
@@ -1247,15 +1242,25 @@ footer p { font-size: 0.82rem; color: var(--muted); }
    Mobile: slides stack vertically. Desktop (.diag-on): a 400vw horizontal
    row scrubbed/snapped by the pinned-scroll JS. */
 .process-section {
-  background-color: #e7eaf3;
-  background-image:
-    radial-gradient(130% 90% at 15% -10%, rgba(255,255,255,0.70), rgba(255,255,255,0) 55%),
-    radial-gradient(120% 100% at 110% 120%, rgba(180,192,224,0.50), rgba(180,192,224,0) 60%),
-    linear-gradient(122deg, rgba(255,255,255,0) 28%, rgba(255,255,255,0.38) 41%, rgba(255,255,255,0) 49%),
-    linear-gradient(122deg, rgba(255,255,255,0) 60%, rgba(255,255,255,0.22) 69%, rgba(255,255,255,0) 76%);
+  background-color: #06060a;
+  background-image: none;
   position: relative;
   overflow: hidden;
 }
+/* Per-slide background tint — fades in as each card becomes active */
+.hiw-bg-overlay { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.hiw-bg-overlay span {
+  position: absolute; inset: 0; opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.hiw-bg-overlay span.active { opacity: 1; }
+.hiw-overlay-0 { background:
+  radial-gradient(60% 70% at 8%  8%,  rgba(79,70,229,0.20), transparent),
+  radial-gradient(50% 55% at 85% 60%, rgba(56,189,248,0.14), transparent); }
+.hiw-overlay-1 { background: radial-gradient(60% 70% at 92% 92%, rgba(251,191,36,0.12), transparent); }
+.hiw-overlay-2 { background: radial-gradient(60% 70% at 92% 8%,  rgba(6,182,212,0.13),  transparent); }
+.hiw-overlay-3 { background: radial-gradient(60% 70% at 8%  92%, rgba(52,211,153,0.12), transparent); }
+
 /* Drifting colour aura behind the glass — soft brand-toned blobs in slow motion */
 .hiw-aura {
   position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
@@ -1264,27 +1269,37 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   position: absolute; border-radius: 50%; filter: blur(70px); will-change: transform;
 }
 .hiw-aura span:nth-child(1) {
-  width: 46vw; height: 46vw; left: -8%; top: -14%;
-  background: rgba(99,102,241,0.45); animation: hiwFloat1 17s ease-in-out infinite;
+  width: 60vw; height: 60vw; left: -12%; top: -20%;
+  background: rgba(255,252,240,0.11); animation: hiwFloat1 17s ease-in-out infinite;
 }
 .hiw-aura span:nth-child(2) {
-  width: 40vw; height: 40vw; right: -6%; bottom: -18%;
-  background: rgba(124,58,237,0.40); animation: hiwFloat2 21s ease-in-out infinite;
+  width: 52vw; height: 52vw; right: -10%; bottom: -22%;
+  background: rgba(255,255,255,0.08); animation: hiwFloat2 21s ease-in-out infinite;
 }
 .hiw-aura span:nth-child(3) {
-  width: 34vw; height: 34vw; left: 42%; top: 30%;
-  background: rgba(129,140,248,0.32); animation: hiwFloat3 19s ease-in-out infinite;
+  width: 42vw; height: 42vw; left: 36%; top: 22%;
+  background: rgba(240,242,255,0.07); animation: hiwFloat3 19s ease-in-out infinite;
 }
-@keyframes hiwFloat1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(9%,7%) scale(1.14); } }
-@keyframes hiwFloat2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-8%,-6%) scale(1.1); } }
-@keyframes hiwFloat3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(6%,-9%) scale(1.16); } }
+.hiw-aura span:nth-child(4) {
+  width: 36vw; height: 36vw; right: 5%; top: -10%;
+  background: rgba(255,248,220,0.09); animation: hiwFloat4 24s ease-in-out infinite;
+}
+.hiw-aura span:nth-child(5) {
+  width: 44vw; height: 44vw; left: -5%; bottom: -15%;
+  background: rgba(220,228,255,0.07); animation: hiwFloat5 28s ease-in-out infinite;
+}
+@keyframes hiwFloat1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(12%,9%) scale(1.18); } }
+@keyframes hiwFloat2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-11%,-8%) scale(1.14); } }
+@keyframes hiwFloat3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(8%,-12%) scale(1.2); } }
+@keyframes hiwFloat4 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-9%,10%) scale(1.13); } }
+@keyframes hiwFloat5 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(10%,-7%) scale(1.11); } }
 
 /* Twinkling starfield behind the cards — two offset layers pulsing out of sync */
 .hiw-sparkle {
   position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
 }
 .hiw-sparkle::before, .hiw-sparkle::after {
-  content: ''; position: absolute; inset: 0;
+  content: ''; position: absolute; inset: -10%;
   background-repeat: no-repeat;
 }
 .hiw-sparkle::before {
@@ -1301,8 +1316,25 @@ footer p { font-size: 0.82rem; color: var(--muted); }
     radial-gradient(1.7px 1.7px at 62% 48%, #fff, transparent),
     radial-gradient(1.3px 1.3px at 74% 88%, #fff, transparent),
     radial-gradient(1.5px 1.5px at 18% 45%, #fff, transparent),
-    radial-gradient(1.2px 1.2px at 95% 15%, #fff, transparent);
-  animation: hiwTwinkle 3.6s ease-in-out infinite;
+    radial-gradient(1.2px 1.2px at 95% 15%, #fff, transparent),
+    radial-gradient(1.4px 1.4px at 3% 52%, #fff, transparent),
+    radial-gradient(1.1px 1.1px at 15% 72%, #fff, transparent),
+    radial-gradient(1.9px 1.9px at 22% 8%, #fff, transparent),
+    radial-gradient(1.3px 1.3px at 35% 40%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 48% 90%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 52% 5%, #fff, transparent),
+    radial-gradient(1.6px 1.6px at 60% 70%, #fff, transparent),
+    radial-gradient(1.4px 1.4px at 71% 52%, #fff, transparent),
+    radial-gradient(1.3px 1.3px at 83% 28%, #fff, transparent),
+    radial-gradient(2.2px 2.2px at 88% 70%, #fff, transparent),
+    radial-gradient(1.1px 1.1px at 97% 44%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 6% 35%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 25% 25%, #fff, transparent),
+    radial-gradient(1.8px 1.8px at 44% 60%, #fff, transparent),
+    radial-gradient(1.3px 1.3px at 70% 8%, #fff, transparent),
+    radial-gradient(1.4px 1.4px at 86% 90%, #fff, transparent),
+    radial-gradient(1.6px 1.6px at 50% 42%, #fff, transparent);
+  animation: hiwTwinkle 3.6s ease-in-out infinite, hiwStarDrift1 40s ease-in-out infinite;
 }
 .hiw-sparkle::after {
   background-image:
@@ -1318,13 +1350,40 @@ footer p { font-size: 0.82rem; color: var(--muted); }
     radial-gradient(1.2px 1.2px at 58% 14%, #fff, transparent),
     radial-gradient(1.8px 1.8px at 72% 30%, #fff, transparent),
     radial-gradient(1.3px 1.3px at 92% 52%, #fff, transparent),
-    radial-gradient(1.4px 1.4px at 6% 28%, #fff, transparent);
-  animation: hiwTwinkle 4.8s ease-in-out infinite;
+    radial-gradient(1.4px 1.4px at 6% 28%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 9% 15%, #fff, transparent),
+    radial-gradient(1.6px 1.6px at 17% 50%, #fff, transparent),
+    radial-gradient(1.3px 1.3px at 24% 78%, #fff, transparent),
+    radial-gradient(2px 2px at 32% 20%, #fff, transparent),
+    radial-gradient(1.4px 1.4px at 40% 68%, #fff, transparent),
+    radial-gradient(1.1px 1.1px at 54% 42%, #fff, transparent),
+    radial-gradient(1.7px 1.7px at 66% 10%, #fff, transparent),
+    radial-gradient(1.3px 1.3px at 75% 78%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 82% 18%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 93% 68%, #fff, transparent),
+    radial-gradient(1.8px 1.8px at 2% 88%, #fff, transparent),
+    radial-gradient(1.4px 1.4px at 11% 42%, #fff, transparent),
+    radial-gradient(1.3px 1.3px at 28% 55%, #fff, transparent),
+    radial-gradient(1.6px 1.6px at 47% 82%, #fff, transparent),
+    radial-gradient(2.1px 2.1px at 61% 32%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 79% 95%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 96% 28%, #fff, transparent);
+  animation: hiwTwinkle 4.8s ease-in-out infinite, hiwStarDrift2 55s ease-in-out infinite;
   animation-delay: 1.2s;
 }
 @keyframes hiwTwinkle {
-  0%, 100% { opacity: 0.18; }
-  50%      { opacity: 0.78; }
+  0%, 100% { opacity: 0.30; }
+  50%      { opacity: 1; }
+}
+@keyframes hiwStarDrift1 {
+  0%,100% { transform: translate(0,0); }
+  33%     { transform: translate(3%,2%); }
+  66%     { transform: translate(1%,-3%); }
+}
+@keyframes hiwStarDrift2 {
+  0%,100% { transform: translate(0,0); }
+  33%     { transform: translate(-2.5%,3%); }
+  66%     { transform: translate(2%,1.5%); }
 }
 @media (prefers-reduced-motion: reduce) {
   .hiw-sparkle::before, .hiw-sparkle::after { animation: none; opacity: 0.4; }
@@ -1452,7 +1511,7 @@ footer p { font-size: 0.82rem; color: var(--muted); }
 .diag-on .hiw-inner { max-width: none; will-change: transform, opacity; transform-origin: center; transition: box-shadow 0.45s ease; }
 /* The centred card gets an accent glow so it clearly stands out from the peeks */
 .diag-on .hiw-inner.is-centered {
-  box-shadow: 0 30px 90px rgba(79,70,229,0.28), 0 4px 16px rgba(60,40,22,0.08);
+  box-shadow: 0 16px 48px rgba(79,70,229,0.08), 0 2px 8px rgba(0,0,0,0.10);
 }
 .diag-on .hiw-progress { display: block; }
 /* Keep step text readable instead of stretching across the whole wide card */
@@ -1645,7 +1704,13 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   <div class="diag-pin" id="diagPin">
    <div class="diag-stage" id="diagStage">
   <section class="process-section" id="process">
-    <div class="hiw-aura" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="hiw-bg-overlay" aria-hidden="true">
+      <span class="hiw-overlay-0 active"></span>
+      <span class="hiw-overlay-1"></span>
+      <span class="hiw-overlay-2"></span>
+      <span class="hiw-overlay-3"></span>
+    </div>
+    <div class="hiw-aura" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
     <div class="hiw-sparkle" aria-hidden="true"></div>
     <div class="hiw-track" id="hiwTrack">
 
@@ -2180,8 +2245,8 @@ observeAnimations();
   // The whole pinned scroll is the 4-slide deck. After the last slide the pin
   // releases and the page scrolls normally into the Reviews section below.
   const SLIDES  = 4;
-  const SLIDE_W = 64;                 // vw per slide (must match CSS .diag-on .hiw-slide)
-  const SIDE_M  = (100 - SLIDE_W) / 2; // centers the active card; neighbours peek on the sides
+  const SLIDE_W = 64;
+  const SIDE_M  = (100 - SLIDE_W) / 2;
 
   let ticking = false;
 
@@ -2189,29 +2254,35 @@ observeAnimations();
   function easeInOutCubic(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   }
-  // One wheel = one slide is enforced by the wheel handler below; this just
-  // eases the glide between two adjacent slides during the snap scroll.
-  function snapEase(frac) {
-    return easeInOutCubic(clamp01(frac));
+  // Starts at full speed, decelerates — makes wheel response feel instant
+  function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
+  function snapEase(frac) { return easeInOutCubic(clamp01(frac)); }
+
+  const overlayEls = Array.prototype.slice.call(
+    document.querySelectorAll('.hiw-bg-overlay span')
+  );
+  let lastActiveSlide = 0;
+
+  function setOverlay(idx) {
+    if (idx === lastActiveSlide) return;
+    lastActiveSlide = idx;
+    overlayEls.forEach(function (el, i) { el.classList.toggle('active', i === idx); });
   }
 
   function update() {
     ticking = false;
-    const total = pin.offsetHeight - window.innerHeight; // scroll distance while pinned
+    const total = pin.offsetHeight - window.innerHeight;
     const top   = pin.getBoundingClientRect().top;
     const p = clamp01(total > 0 ? (-top) / total : 0);
 
-    // Horizontal deck (snap one slide at a time across the whole pin)
-    const span = SLIDES - 1;                 // 3 transitions
-    const x    = p * span;                   // 0 .. 3 (integer = a slide centred)
+    const span = SLIDES - 1;
+    const x    = p * span;
     const seg  = Math.min(span - 1, Math.floor(x));
-    const pos  = seg + snapEase(x - seg);    // eased track position
-    // Center the active card in the viewport; neighbours peek on either side
+    const pos  = seg + snapEase(x - seg);
     track.style.transform = 'translate3d(' + (SIDE_M - pos * SLIDE_W).toFixed(3) + 'vw, 0, 0)';
 
-    // Carousel depth: the centred card is full size & bright; neighbours shrink, dim, and blur.
     for (let i = 0; i < slideEls.length; i++) {
-      const dist = Math.abs(i - pos);               // distance from centre
+      const dist = Math.abs(i - pos);
       const ad   = Math.min(dist, 1);
       if (cardEls[i]) {
         cardEls[i].style.transform = 'scale(' + (1 - ad * 0.12).toFixed(3) + ')';
@@ -2221,7 +2292,9 @@ observeAnimations();
       }
     }
 
-    // Progress bar fills as you move through the deck
+    // Drive the per-slide background tint
+    setOverlay(Math.min(SLIDES - 1, Math.round(pos)));
+
     if (progressFill) progressFill.style.width = (pos / span * 100).toFixed(2) + '%';
   }
 
@@ -2234,27 +2307,27 @@ observeAnimations();
   // is pinned we intercept the wheel and smooth-scroll to exactly the
   // next/previous anchor (locked until it lands). Past the last slide the
   // wheel is released, so the page scrolls normally into Reviews.
-  const SLIDE_FRAC = [0, 1 / 3, 2 / 3, 1];   // pin-scroll fractions for the 4 slides
+  const SLIDE_FRAC = [0, 1 / 3, 2 / 3, 1];
   let locked = false;
   let lockTimer = null;
   let rafId = null;
+  let currentTarget = 0;  // tracks the intended anchor index so interruption doesn't skip slides
 
-  // Custom eased scroll tween (gives us control over duration per transition,
-  // unlike the browser's native smooth-scroll which felt abrupt).
   function animateScrollTo(toY, duration) {
     cancelAnimationFrame(rafId);
     const fromY = window.scrollY;
     const dist  = toY - fromY;
+    if (Math.abs(dist) < 2) { locked = false; return; }
     const begin = performance.now();
     locked = true;
     (function step(now) {
       const t = Math.min(1, (now - begin) / duration);
-      window.scrollTo(0, Math.round(fromY + dist * easeInOutCubic(t)));
+      window.scrollTo(0, Math.round(fromY + dist * easeOutQuart(t)));
       if (t < 1) rafId = requestAnimationFrame(step);
       else locked = false;
     })(begin);
     clearTimeout(lockTimer);
-    lockTimer = setTimeout(function () { locked = false; }, duration + 250); // safety unlock
+    lockTimer = setTimeout(function () { locked = false; }, duration + 60);
   }
 
   function onWheel(ev) {
@@ -2262,35 +2335,69 @@ observeAnimations();
     const total = pin.offsetHeight - window.innerHeight;
     if (total <= 0) return;
     const vh     = window.innerHeight;
-    const pinTop = window.scrollY + rect.top;     // document Y of the pin's top
+    const pinTop = window.scrollY + rect.top;
 
-    // Snap targets: the 4 slides within the pin, then Reviews one viewport below it
     const anchorsY = SLIDE_FRAC.map(function (f) { return pinTop + f * total; });
-    anchorsY.push(pinTop + total + vh);           // Reviews fills the viewport
+    anchorsY.push(pinTop + total + vh);  // Reviews (index 4)
 
     const y  = window.scrollY;
-    const lo = anchorsY[0];
+    const lo = anchorsY[0] - vh;  // one viewport above the pin entry
     const hi = anchorsY[anchorsY.length - 1];
-    if (y < lo - 1 || y > hi + 1) return;          // outside the deck→Reviews range: scroll normally
-
-    if (locked) { ev.preventDefault(); return; }
+    if (y < lo - 1 || y > hi + 1) return;
 
     const dir = ev.deltaY > 0 ? 1 : (ev.deltaY < 0 ? -1 : 0);
     if (dir === 0) return;
 
-    // nearest anchor to the current scroll position
+    // Mid-animation interruption: advance/reverse the tracked target instead of
+    // recalculating from mid-scroll position (prevents skipping slides)
+    if (locked) {
+      const newTarget = currentTarget + dir;
+      cancelAnimationFrame(rafId);
+      clearTimeout(lockTimer);
+      locked = false;
+      if (newTarget < 0) {
+        ev.preventDefault();
+        currentTarget = -1;
+        animateScrollTo(Math.round(anchorsY[0] - vh), 260);
+        return;
+      }
+      if (newTarget >= anchorsY.length) return;
+      ev.preventDefault();
+      currentTarget = newTarget;
+      animateScrollTo(Math.round(anchorsY[newTarget]), newTarget === 4 ? 260 : 240);
+      return;
+    }
+
+    // Approaching from recent works: one downward scroll snaps into the first slide
+    if (y < anchorsY[0] - 1) {
+      if (dir < 0) return;
+      ev.preventDefault();
+      currentTarget = 0;
+      animateScrollTo(Math.round(anchorsY[0]), 260);
+      return;
+    }
+
+    // Find the nearest anchor from current scroll position
     let cur = 0, bestD = Infinity;
     for (let i = 0; i < anchorsY.length; i++) {
       const d = Math.abs(anchorsY[i] - y);
       if (d < bestD) { bestD = d; cur = i; }
     }
+    currentTarget = cur;
+
     const target = cur + dir;
-    if (target < 0 || target >= anchorsY.length) return;  // past the ends: release to normal scroll
+    // Scrolling up from the first slide: snap back above the pin into recent works
+    if (target < 0) {
+      ev.preventDefault();
+      currentTarget = -1;
+      animateScrollTo(Math.round(anchorsY[0] - vh), 260);
+      return;
+    }
+    if (target >= anchorsY.length) return;
 
     ev.preventDefault();
-    // The last slide <-> Reviews step (3 <-> 4) is a full-viewport move — keep it fast.
-    const toReviews = (cur === 4 || target === 4);
-    animateScrollTo(Math.round(anchorsY[target]), toReviews ? 300 : 600);
+    currentTarget = target;
+    animateScrollTo(Math.round(anchorsY[target]), target === 4 ? 260 : 240);
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
