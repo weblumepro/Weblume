@@ -3,7 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Weblume — Premium Web Design</title>
+<title>Weblume — Premium Web Design Ottawa</title>
+<meta name="description" content="Weblume builds premium custom websites for Ottawa businesses — designed, built, and live in 7–14 days. Starting at $50/month. Book a free consultation.">
+
+<!-- Canonical -->
+<link rel="canonical" href="https://weblume.ca/">
+
+<!-- Open Graph (LinkedIn, iMessage, Slack, Facebook) -->
+<meta property="og:type"        content="website">
+<meta property="og:url"         content="https://weblume.ca/">
+<meta property="og:site_name"   content="Weblume">
+<meta property="og:locale"      content="en_CA">
+<meta property="og:title"       content="Weblume — Premium Web Design Ottawa">
+<meta property="og:description" content="We build premium websites that make your brand impossible to ignore. Ottawa-based, live in 7–14 days, starting at $50/month.">
+<meta property="og:image"       content="https://weblume.ca/landingpage.webp">
+<meta property="og:image:width"  content="1536">
+<meta property="og:image:height" content="768">
+<meta property="og:image:alt"   content="Weblume — Premium Web Design">
+
+<!-- Twitter / X card -->
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="Weblume — Premium Web Design Ottawa">
+<meta name="twitter:description" content="We build premium websites that make your brand impossible to ignore. Ottawa-based, live in 7–14 days, starting at $50/month.">
+<meta name="twitter:image"       content="https://weblume.ca/landingpage.webp">
+
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -496,10 +519,24 @@ nav.main-nav.nav-clear {
 .team-info ul li::before { content: '—'; color: var(--muted); flex-shrink: 0; }
 
 /* BOOKING */
-.booking-wrap { max-width: 600px; margin: 0 auto; padding: 5rem 2rem 6rem; }
+.booking-wrap { max-width: 940px; margin: 0 auto; padding: 5rem 2rem 6rem; }
 .booking-wrap h1 { margin-bottom: 0.6rem; }
-.booking-wrap > p { margin-bottom: 2.5rem; }
-.booking-form { display: flex; flex-direction: column; gap: 1.2rem; }
+.booking-wrap > p { margin-bottom: 2rem; }
+.booking-calendly {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 32px rgba(79,70,229,0.08);
+  margin-bottom: 3rem;
+}
+.booking-divider {
+  display: flex; align-items: center; gap: 1rem;
+  margin: 3rem 0 2rem; color: var(--muted); font-size: 0.85rem;
+}
+.booking-divider::before, .booking-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.booking-form { display: flex; flex-direction: column; gap: 1.2rem; max-width: 600px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
 .field { display: flex; flex-direction: column; gap: 0.4rem; }
 .field label { font-size: 0.82rem; font-weight: 600; color: var(--sub); letter-spacing: 0.04em; text-transform: uppercase; }
@@ -2037,9 +2074,17 @@ footer p { font-size: 0.82rem; color: var(--muted); }
     <div class="fade-up">
       <div class="section-label">Let's Talk</div>
       <h1>Book your consultation.</h1>
-      <p>Tell us about your business and what you're looking for. We'll get back to you within one business day.</p>
+      <p>Pick a time that works for you — we'll handle the rest. Free, no commitment.</p>
     </div>
-    <div class="booking-form fade-up" style="margin-top:2.5rem;">
+
+    <!-- Calendly inline widget -->
+    <div class="booking-calendly fade-up">
+      <div class="calendly-inline-widget" data-url="https://calendly.com/weblumepro/30min?hide_gdpr_banner=1" style="min-width:320px;height:700px;"></div>
+    </div>
+
+    <div class="booking-divider fade-up">Or send us a message instead</div>
+
+    <div class="booking-form fade-up">
       <div class="form-row">
         <div class="field"><label for="b-name">Full Name</label><input type="text" id="b-name" placeholder="Jane Smith" autocomplete="name"></div>
         <div class="field"><label for="b-email">Email Address</label><input type="email" id="b-email" placeholder="jane@yourbiz.com" autocomplete="email"></div>
@@ -2072,6 +2117,17 @@ footer p { font-size: 0.82rem; color: var(--muted); }
 </footer>
 
 <script>
+// --- Calendly script (loaded once, on first visit to booking page) ---
+let calendlyLoaded = false;
+function loadCalendly() {
+  if (calendlyLoaded) return;
+  calendlyLoaded = true;
+  const s = document.createElement('script');
+  s.src = 'https://assets.calendly.com/assets/external/widget.js';
+  s.async = true;
+  document.head.appendChild(s);
+}
+
 // --- Page navigation ---
 const pages = ['home','team','work','prices','booking'];
 function showPage(id) {
@@ -2083,6 +2139,7 @@ function showPage(id) {
   document.getElementById('page-' + id).classList.add('active');
   const nl = document.getElementById('nl-' + id);
   if (nl) nl.classList.add('active');
+  if (id === 'booking') loadCalendly();
   window.scrollTo({ top: 0, behavior: 'smooth' });
   setTimeout(observeAnimations, 60);
   if (window._heroTick) window._heroTick();
