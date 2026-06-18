@@ -598,15 +598,14 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   justify-content: center;
   /* White with a very faint emoji-texture image (white overlay knocks it to ~10%) */
   background-color: #ffffff;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.90), rgba(255,255,255,0.90)),
-    url('reviewsBG.png');
+  background-image: url('reviewsBackground.png');
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
   position: relative;
   overflow: hidden;
   padding: 0 2rem;
+  padding-bottom: 18vh;
   text-align: center;
 }
 .t-eyebrow {
@@ -685,6 +684,19 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   background: linear-gradient(to bottom, transparent, #ffffff);
   pointer-events: none;
   z-index: 3;
+}
+
+/* Glossy glass pane — diagonal highlight streak + bright top rim */
+.testimonials-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0) 38%),
+    linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 45%);
+  border-top: 1px solid rgba(255,255,255,0.80);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Blend — testimonials bottom fades to CTA cream (slow, tall gradient) */
@@ -2086,10 +2098,14 @@ function closeMobile() {
 // --- Nav scroll (rAF-throttled, passive) ---
 let navTicking = false;
 const mainNav = document.getElementById('mainNav');
+const testimonialsEl = document.getElementById('testimonials');
 window.addEventListener('scroll', () => {
   if (!navTicking) {
     requestAnimationFrame(() => {
       mainNav.classList.toggle('scrolled', window.scrollY > 20);
+      const tRect = testimonialsEl ? testimonialsEl.getBoundingClientRect() : null;
+      const overTestimonials = tRect && tRect.top <= 64 && tRect.bottom > 0;
+      mainNav.classList.toggle('nav-clear', overTestimonials);
       navTicking = false;
     });
     navTicking = true;
