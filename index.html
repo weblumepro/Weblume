@@ -871,6 +871,91 @@ footer p { font-size: 0.82rem; color: var(--muted); }
 }
 .diag-on .diag-stage > .process-section::after { display: none; }
 
+/* FAQ SECTION */
+.faq-section {
+  padding: 7rem 2rem;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+}
+.faq-inner {
+  max-width: 760px;
+  width: 100%;
+}
+.faq-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.8rem;
+}
+.faq-heading {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 3rem;
+}
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+.faq-item {
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.4rem 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  transition: color 0.2s;
+}
+.faq-question:hover { color: var(--accent); }
+.faq-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, transform 0.3s;
+  color: var(--sub);
+}
+.faq-item.open .faq-icon {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: rotate(45deg);
+}
+.faq-answer {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s ease, padding 0.35s ease;
+}
+.faq-answer-inner {
+  padding-bottom: 1.4rem;
+  font-size: 0.97rem;
+  line-height: 1.75;
+  color: var(--sub);
+}
+.faq-item.open .faq-answer {
+  max-height: 400px;
+}
+
 /* CTA SECTION */
 .cta-section {
   height: 100vh;
@@ -1995,6 +2080,77 @@ footer p { font-size: 0.82rem; color: var(--muted); }
     </div>
   </section>
 
+  <!-- FAQ -->
+  <section class="faq-section" id="faq">
+    <div class="faq-inner fade-up">
+      <p class="faq-label">FAQ</p>
+      <h2 class="faq-heading">Common questions</h2>
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            How long does it take to build my website?
+            <span class="faq-icon" aria-hidden="true">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </span>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Most sites go live in 7–14 days from your first call. We keep the process tight — one revision round, fast communication, and no unnecessary back-and-forth. You'll know the exact timeline before we start.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            What's included in the $50/month plan?
+            <span class="faq-icon" aria-hidden="true">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </span>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Your $50/month covers hosting, ongoing maintenance, and minor content updates (text, photos, hours). There are no setup fees or surprise charges — just one flat monthly rate that keeps your site fast, secure, and up to date.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            Do I need to provide anything to get started?
+            <span class="faq-icon" aria-hidden="true">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </span>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Ideally some photos of your space or product and a few sentences about what you do. We handle the rest — copywriting, design, and everything technical. The less you have to prepare, the better we are at filling the gaps.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            Can I make changes to the site after it launches?
+            <span class="faq-icon" aria-expanded="false">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </span>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Yes — minor updates are included in your monthly plan. Just message us. For larger redesigns or new features, we'll give you a fixed quote upfront with no surprises.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            What if I already have a website?
+            <span class="faq-icon" aria-hidden="true">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </span>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">We can migrate or rebuild it. A lot of our clients come in with a DIY site that no longer reflects where their business is at. We'll audit what you have, tell you honestly what's worth keeping, and build something you're proud to share.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            Do you work with businesses outside Ottawa?
+            <span class="faq-icon" aria-hidden="true">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </span>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Absolutely. We're Ottawa-based but work with clients across Canada. Everything happens over video call and email — location has never been a barrier.</div></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <!-- CTA -->
   <section class="cta-section" id="cta">
     <div class="cta-inner fade-up">
@@ -2302,6 +2458,22 @@ function observeAnimations() {
   els.forEach(el => obs.observe(el));
 }
 observeAnimations();
+
+// --- FAQ accordion ---
+document.querySelectorAll('.faq-question').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var item = btn.closest('.faq-item');
+    var isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(function(el) {
+      el.classList.remove('open');
+      el.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  });
+});
 
 // --- Hero frame-sequence animation ---
 (function () {
