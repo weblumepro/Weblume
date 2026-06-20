@@ -2851,7 +2851,7 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
     if (locked) return;
 
     wheelAccum += delta;
-    var THRESHOLD = 60;
+    var THRESHOLD = 180;
     if (Math.abs(wheelAccum) < THRESHOLD) return;
 
     var dir = wheelAccum > 0 ? 1 : -1;
