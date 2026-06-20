@@ -2801,6 +2801,7 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
       lockTimer = setTimeout(function () {
         track.style.transition = '';
         locked = false;
+        wheelAccum = 0;
         update();
       }, duration + 60);
 
@@ -2816,7 +2817,7 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
         if (t < 1) { rafId = requestAnimationFrame(step); }
         else { locked = false; update(); }
       })(begin);
-      lockTimer = setTimeout(function () { locked = false; }, duration + 80);
+      lockTimer = setTimeout(function () { locked = false; wheelAccum = 0; }, duration + 80);
     }
   }
 
