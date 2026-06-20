@@ -2760,12 +2760,15 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
   let currentTarget = 0;
   let wheelAccum = 0;
   let wheelResetTimer = null;
-  let justFired = false;   // true while we're blocking momentum after a slide advance
-  let peakDelta = 0;       // absolute delta at fire time — momentum events fall below this
+  let cooldown = false;
+  let cooldownTimer = null;
 
   function releaseLock() {
     locked = false;
     wheelAccum = 0;
+    cooldown = true;
+    clearTimeout(cooldownTimer);
+    cooldownTimer = setTimeout(function () { cooldown = false; }, 50);
   }
 
   // useCSS = true  → within-deck: page scroll is invisible (sticky stage stays put),
@@ -2852,37 +2855,20 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
 
     // Reset accumulator after a 200ms scroll pause so momentum doesn't carry over
     clearTimeout(wheelResetTimer);
-    wheelResetTimer = setTimeout(function () { wheelAccum = 0; justFired = false; peakDelta = 0; }, 200);
+    wheelResetTimer = setTimeout(function () { wheelAccum = 0; }, 200);
 
-    if (locked) return;
-
-    var absDelta = Math.abs(delta);
-
-    // Momentum detection: after a slide fires, trackpad sends decelerating events.
-    // Ignore them until delta rises above the level seen at fire time (= new gesture).
-    if (justFired) {
-      if (absDelta <= peakDelta) {
-        peakDelta = absDelta; // track the decay
-        return;
-      }
-      // Delta is rising again — user started a new deliberate swipe
-      justFired = false;
-      peakDelta = 0;
-      wheelAccum = 0;
-    }
-    peakDelta = Math.max(peakDelta, absDelta);
+    // While locked or in post-slide cooldown, discard input
+    if (locked || cooldown) return;
 
     wheelAccum += delta;
 
-    // Mouse wheel sends large deltas (≥80px per notch) — fire immediately.
-    // Trackpad small deltas must accumulate to 180px before firing.
-    var THRESHOLD = absDelta >= 80 ? 1 : 180;
+    // Mouse wheel sends large deltas (≥100px per notch in pixel mode) — fire immediately.
+    // Trackpad sends small deltas that must accumulate to 180px before firing.
+    var THRESHOLD = Math.abs(delta) >= 80 ? 1 : 180;
     if (Math.abs(wheelAccum) < THRESHOLD) return;
 
     var dir = wheelAccum > 0 ? 1 : -1;
-    justFired = true;
-    peakDelta = absDelta; // momentum events will be below this
-    wheelAccum = 0;
+    wheelAccum = 0; // reset immediately so a single gesture can't fire twice
 
     // Approaching from recent works: snap to first slide
     if (y < anchorsY[0] - 1) {
