@@ -41,8 +41,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="landingpage.webp" as="image" fetchpriority="high">
 <link rel="preload" href="introJPG/ezgif-frame-001.jpg" as="image" media="(min-width: 701px)">
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Dancing+Script:wght@700&family=Cormorant+Garamond:wght@300;400&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Dancing+Script:wght@700&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet"></noscript>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1327,10 +1327,8 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   background-position: top center;
   opacity: 0;
   transition: opacity 0.45s ease;
-  transform: translateZ(0);
-  backface-visibility: hidden;
 }
-.wp-bg.active { opacity: 1; }
+.wp-bg.active { opacity: 0.9; }
 .wp-dim {
   position: absolute; inset: 0;
   background: linear-gradient(to bottom, transparent 30%, rgba(4,2,14,0.18) 60%, rgba(4,2,14,0.28) 100%);
@@ -1347,35 +1345,29 @@ footer p { font-size: 0.82rem; color: var(--muted); }
 }
 .wp-top {
   position: absolute;
-  bottom: 5rem; left: 0; right: 0;
-  z-index: 4;
-  text-align: center;
+  bottom: 2rem; left: 1.5rem; right: auto;
+  z-index: 1;
+  text-align: left;
+  pointer-events: none;
 }
 .wp-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 1.1rem;
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(4rem, 10vw, 10rem);
+  font-weight: 300;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.90);
-  text-shadow: 0 2px 16px rgba(0,0,0,0.50);
-}
-.wp-eyebrow::before,
-.wp-eyebrow::after {
-  content: '';
-  display: block;
-  width: 52px;
-  height: 2px;
-  background: rgba(255,255,255,0.70);
-  border-radius: 2px;
+  color: #fff;
+  opacity: 0.32;
+  text-shadow: none;
+  user-select: none;
+  line-height: 0.95;
 }
 .wp-stage {
   position: relative;
   z-index: 2;
   width: 100%;
   height: 540px;
+  margin-top: 2rem;
   perspective: 1100px;
   perspective-origin: center center;
   overflow: visible;
@@ -1388,7 +1380,6 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   border-radius: 0;
   overflow: hidden;
   cursor: pointer;
-  will-change: transform;
   transition: transform 0.68s cubic-bezier(0.22,1,0.36,1), opacity 0.68s ease;
 }
 .wp-card.wp-active {
@@ -1493,18 +1484,19 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   z-index: 2;
 }
 .wp-view-all {
-  display: inline-flex; align-items: center; gap: 0.4rem;
-  padding: 0.55rem 1.2rem;
-  background: rgba(255,255,255,0.10);
-  border: 1px solid rgba(255,255,255,0.34);
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.65);
   border-radius: 8px;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.78rem; font-weight: 600;
-  color: rgba(255,255,255,0.85);
+  font-size: 0.82rem; font-weight: 700;
+  color: #fff;
   cursor: pointer;
-  transition: background 0.18s, border-color 0.18s;
+  background: rgba(30,25,20,0.55);
+  transition: background 0.18s, border-color 0.18s, transform 0.15s;
 }
-.wp-view-all:hover { background: rgba(255,255,255,0.20); border-color: rgba(255,255,255,0.60); }
+.wp-view-all:hover { background: rgba(255,255,255,0.28); border-color: rgba(255,255,255,0.90); transform: translateY(-1px); }
 
 /* Process / How it works — 4-slide deck.
    Mobile: slides stack vertically. Desktop (.diag-on): a 400vw horizontal
@@ -1534,33 +1526,33 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
 }
 .hiw-aura span {
-  position: absolute; border-radius: 50%; filter: blur(70px); will-change: transform;
+  position: absolute; border-radius: 50%; filter: blur(32px); will-change: transform;
 }
 .hiw-aura span:nth-child(1) {
-  width: 60vw; height: 60vw; left: -12%; top: -20%;
-  background: rgba(255,252,240,0.11); animation: hiwFloat1 17s ease-in-out infinite;
+  width: 18vw; height: 18vw; left: 8%; top: 15%;
+  background: rgba(255,252,240,0.18); animation: hiwFloat1 11s ease-in-out infinite;
 }
 .hiw-aura span:nth-child(2) {
-  width: 52vw; height: 52vw; right: -10%; bottom: -22%;
-  background: rgba(255,255,255,0.08); animation: hiwFloat2 21s ease-in-out infinite;
+  width: 14vw; height: 14vw; right: 12%; bottom: 20%;
+  background: rgba(255,255,255,0.14); animation: hiwFloat2 9s ease-in-out infinite;
 }
 .hiw-aura span:nth-child(3) {
-  width: 42vw; height: 42vw; left: 36%; top: 22%;
-  background: rgba(240,242,255,0.07); animation: hiwFloat3 19s ease-in-out infinite;
+  width: 12vw; height: 12vw; left: 48%; top: 30%;
+  background: rgba(240,242,255,0.13); animation: hiwFloat3 13s ease-in-out infinite;
 }
 .hiw-aura span:nth-child(4) {
-  width: 36vw; height: 36vw; right: 5%; top: -10%;
-  background: rgba(255,248,220,0.09); animation: hiwFloat4 24s ease-in-out infinite;
+  width: 10vw; height: 10vw; right: 28%; top: 10%;
+  background: rgba(255,248,220,0.16); animation: hiwFloat4 8s ease-in-out infinite;
 }
 .hiw-aura span:nth-child(5) {
-  width: 44vw; height: 44vw; left: -5%; bottom: -15%;
-  background: rgba(220,228,255,0.07); animation: hiwFloat5 28s ease-in-out infinite;
+  width: 16vw; height: 16vw; left: 22%; bottom: 18%;
+  background: rgba(220,228,255,0.13); animation: hiwFloat5 12s ease-in-out infinite;
 }
-@keyframes hiwFloat1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(12%,9%) scale(1.18); } }
-@keyframes hiwFloat2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-11%,-8%) scale(1.14); } }
-@keyframes hiwFloat3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(8%,-12%) scale(1.2); } }
-@keyframes hiwFloat4 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-9%,10%) scale(1.13); } }
-@keyframes hiwFloat5 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(10%,-7%) scale(1.11); } }
+@keyframes hiwFloat1 { 0%,100% { transform: translate(0,0); } 33% { transform: translate(22%,18%); } 66% { transform: translate(-14%,24%); } }
+@keyframes hiwFloat2 { 0%,100% { transform: translate(0,0); } 33% { transform: translate(-26%,-20%); } 66% { transform: translate(18%,-28%); } }
+@keyframes hiwFloat3 { 0%,100% { transform: translate(0,0); } 33% { transform: translate(30%,-22%); } 66% { transform: translate(-20%,16%); } }
+@keyframes hiwFloat4 { 0%,100% { transform: translate(0,0); } 33% { transform: translate(-24%,30%); } 66% { transform: translate(28%,14%); } }
+@keyframes hiwFloat5 { 0%,100% { transform: translate(0,0); } 33% { transform: translate(20%,-26%); } 66% { transform: translate(-28%,-18%); } }
 
 /* Twinkling starfield behind the cards — two offset layers pulsing out of sync */
 .hiw-sparkle {
@@ -1778,12 +1770,10 @@ footer p { font-size: 0.82rem; color: var(--muted); }
 .diag-on .hiw-slide { flex: 0 0 64vw; width: 64vw; min-height: 0; height: 100%; padding: 0 1.4vw; }
 .diag-on .hiw-inner {
   max-width: none; will-change: transform, opacity; transform-origin: center;
-  filter: blur(2px);
-  transition: filter 0.28s ease, box-shadow 0.45s ease;
+  transition: box-shadow 0.45s ease;
 }
 /* The centred card gets an accent glow so it clearly stands out from the peeks */
 .diag-on .hiw-inner.is-centered {
-  filter: none;
   box-shadow: 0 16px 48px rgba(79,70,229,0.08), 0 2px 8px rgba(0,0,0,0.10);
 }
 .diag-on .hiw-progress { display: block; }
@@ -1963,13 +1953,14 @@ footer p { font-size: 0.82rem; color: var(--muted); }
     <div class="wp-backgrounds">
       <div class="wp-bg" style="background-image:url('matchaBackground.webp')"></div>
       <div class="wp-bg" style="background-image:url('PagodaBackground.webp')"></div>
-      <!-- COMMENTED OUT — restore when ready:
       <div class="wp-bg" style="background-image:url('foodinatorBackground.webp')"></div>
+      <!-- COMMENTED OUT — restore when ready:
       <div class="wp-bg" style="background-image:url('inskitchenBackground.webp')"></div>
       -->
     </div>
     <div class="wp-dim"></div>
-    <div class="wp-top"><p class="wp-eyebrow">Recent work</p></div>
+    <div class="wp-top"><p class="wp-eyebrow">Our<br>Partners</p></div>
+
     <div class="wp-stage">
       <div class="wp-card" data-href="https://glowhourmatcha.vercel.app/">
         <img src="matchaCard.png" alt="Glow Hour Matcha" loading="lazy" decoding="async">
@@ -1977,10 +1968,10 @@ footer p { font-size: 0.82rem; color: var(--muted); }
       <div class="wp-card" data-href="https://pagoda-restaurant-website.vercel.app/">
         <img src="pagodaCard.webp" alt="Pagoda Restaurant" loading="lazy" decoding="async">
       </div>
-      <!-- COMMENTED OUT — restore when ready:
-      <div class="wp-card" data-href="https://foodinator-pro.vercel.app/">
-        <img src="foodinatorCard.webp" alt="Foodinator" loading="lazy" decoding="async">
+      <div class="wp-card">
+        <img src="inProgress.png" alt="Coming soon" loading="lazy" decoding="async">
       </div>
+      <!-- COMMENTED OUT — restore when ready:
       <div class="wp-card" data-href="https://inskitchen.vercel.app/">
         <img src="insKitchenCard.webp" alt="Ink Kitchen" loading="lazy" decoding="async">
       </div>
@@ -2711,6 +2702,12 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
   );
   let lastActiveSlide = 0;
 
+  // Cache pin top offset so update() never calls getBoundingClientRect()
+  let pinTopCache = 0;
+  function refreshPinTop() { pinTopCache = pin.getBoundingClientRect().top + window.scrollY; }
+  refreshPinTop();
+  window.addEventListener('resize', refreshPinTop, { passive: true });
+
   function setOverlay(idx) {
     if (idx === lastActiveSlide) return;
     lastActiveSlide = idx;
@@ -2720,7 +2717,7 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
   function update() {
     ticking = false;
     const total = pin.offsetHeight - window.innerHeight;
-    const top   = pin.getBoundingClientRect().top;
+    const top   = pinTopCache - window.scrollY;
     const p = clamp01(total > 0 ? (-top) / total : 0);
 
     const span = SLIDES - 1;
@@ -2929,6 +2926,8 @@ function goTestimonial(i) {
     const isMobile = window.innerWidth < 700;
     const step = isMobile ? 260 : 320;
 
+    cards.forEach(c => c.style.willChange = 'transform, opacity');
+
     cards.forEach((card, i) => {
       let d = i - active;
       if (d > n / 2)  d -= n;
@@ -2949,6 +2948,9 @@ function goTestimonial(i) {
     });
 
     bgs.forEach((bg, i) => bg.classList.toggle('active', i === active));
+
+    clearTimeout(render._wct);
+    render._wct = setTimeout(() => cards.forEach(c => c.style.willChange = 'auto'), 700);
   }
 
   document.getElementById('wpPrev').onclick = () => { active = (active - 1 + n) % n; render(); };
