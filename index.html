@@ -1515,8 +1515,9 @@ footer p { font-size: 0.82rem; color: var(--muted); }
 }
 .hiw-bg-overlay span.active { opacity: 1; }
 .hiw-overlay-0 { background:
-  radial-gradient(60% 70% at 8%  8%,  rgba(79,70,229,0.20), transparent),
-  radial-gradient(50% 55% at 85% 60%, rgba(56,189,248,0.14), transparent); }
+  radial-gradient(65% 75% at 10% 15%, rgba(130,140,70,0.28),  transparent),
+  radial-gradient(55% 60% at 80% 70%, rgba(195,160,65,0.22),  transparent),
+  radial-gradient(40% 45% at 50% 40%, rgba(100,110,60,0.14),  transparent); }
 .hiw-overlay-1 { background: radial-gradient(60% 70% at 92% 92%, rgba(251,191,36,0.12), transparent); }
 .hiw-overlay-2 { background: radial-gradient(60% 70% at 92% 8%,  rgba(6,182,212,0.13),  transparent); }
 .hiw-overlay-3 { background: radial-gradient(60% 70% at 8%  92%, rgba(52,211,153,0.12), transparent); }
@@ -2075,23 +2076,23 @@ footer p { font-size: 0.82rem; color: var(--muted); }
     <div class="t-slides">
       <div class="t-slide active" id="t-0">
         <span class="t-quote-mark">"</span>
-        <p class="t-text">Weblume completely transformed how our business looks online. We started getting compliments from customers within the first week of launch.</p>
-        <div class="t-author">
-          <div class="t-avatar">GH</div>
-          <div>
-            <p class="t-name">Judy D.</p>
-            <p class="t-loc">Glow Hour Matcha &nbsp;·&nbsp; Ottawa, CA</p>
-          </div>
-        </div>
-      </div>
-      <div class="t-slide" id="t-1">
-        <span class="t-quote-mark">"</span>
         <p class="t-text">From start to finish the process was smooth and the result was beyond what we imagined. Our website finally matches the quality of our food.</p>
         <div class="t-author">
           <div class="t-avatar">PR</div>
           <div>
             <p class="t-name">David C.</p>
             <p class="t-loc">Pagoda Restaurant &nbsp;·&nbsp; Kirkland Lake, CA</p>
+          </div>
+        </div>
+      </div>
+      <div class="t-slide" id="t-1">
+        <span class="t-quote-mark">"</span>
+        <p class="t-text">Weblume completely transformed how our business looks online. We started getting compliments from customers within the first week of launch.</p>
+        <div class="t-author">
+          <div class="t-avatar">GH</div>
+          <div>
+            <p class="t-name">Judy D.</p>
+            <p class="t-loc">Glow Hour Matcha &nbsp;·&nbsp; Ottawa, CA</p>
           </div>
         </div>
       </div>
@@ -2757,7 +2758,8 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
   let lockTimer = null;
   let rafId = null;
   let currentTarget = 0;
-  let lastWheelTime = 0;
+  let wheelAccum = 0;
+  let wheelResetTimer = null;
 
   // useCSS = true  → within-deck: page scroll is invisible (sticky stage stays put),
   //                   so we jump scrollY instantly and animate only the track via CSS.
@@ -2833,22 +2835,31 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
     var hi = anchorsY[anchorsY.length - 1];
     if (y < lo - 1 || y > hi + 1) return;
 
-    var dir = ev.deltaY > 0 ? 1 : (ev.deltaY < 0 ? -1 : 0);
-    if (dir === 0) return;
+    // Normalise deltaY across deltaMode (pixels / lines / pages)
+    var delta = ev.deltaY;
+    if (ev.deltaMode === 1) delta *= 32;
+    if (ev.deltaMode === 2) delta *= vh;
+    if (delta === 0) return;
 
-    // Ignore wheel events while a slide transition is in progress (prevents
-    // trackpad momentum from chaining rapid-fire slide jumps)
-    if (locked) { ev.preventDefault(); return; }
+    ev.preventDefault();
 
-    // Debounce: ignore bursts faster than 320ms (trackpad coasting)
-    var now = performance.now();
-    if (now - lastWheelTime < 320) { ev.preventDefault(); return; }
-    lastWheelTime = now;
+    // Reset accumulator after a 200ms scroll pause so momentum doesn't carry over
+    clearTimeout(wheelResetTimer);
+    wheelResetTimer = setTimeout(function () { wheelAccum = 0; }, 200);
 
-    // Approaching from recent works: one scroll snaps to first slide
+    // While locked, block native scroll but don't advance — let the animation finish
+    if (locked) return;
+
+    wheelAccum += delta;
+    var THRESHOLD = 60;
+    if (Math.abs(wheelAccum) < THRESHOLD) return;
+
+    var dir = wheelAccum > 0 ? 1 : -1;
+    wheelAccum = 0; // reset immediately so a single gesture can't fire twice
+
+    // Approaching from recent works: snap to first slide
     if (y < anchorsY[0] - 1) {
       if (dir < 0) return;
-      ev.preventDefault();
       currentTarget = 0;
       animateScrollTo(Math.round(anchorsY[0]), 260, false);
       return;
@@ -2863,14 +2874,12 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
 
     var target = cur + dir;
     if (target < 0) {
-      ev.preventDefault();
       currentTarget = -1;
       animateScrollTo(Math.round(anchorsY[0] - vh), 260, false);
       return;
     }
     if (target >= anchorsY.length) return;
 
-    ev.preventDefault();
     currentTarget = target;
     animateScrollTo(Math.round(anchorsY[target]), target === 4 ? 260 : 220, target !== 4);
   }
