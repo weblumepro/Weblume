@@ -2760,6 +2760,16 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
   let currentTarget = 0;
   let wheelAccum = 0;
   let wheelResetTimer = null;
+  let cooldown = false;
+  let cooldownTimer = null;
+
+  function releaseLock() {
+    locked = false;
+    wheelAccum = 0;
+    cooldown = true;
+    clearTimeout(cooldownTimer);
+    cooldownTimer = setTimeout(function () { cooldown = false; }, 350);
+  }
 
   // useCSS = true  → within-deck: page scroll is invisible (sticky stage stays put),
   //                   so we jump scrollY instantly and animate only the track via CSS.
@@ -2800,8 +2810,7 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
 
       lockTimer = setTimeout(function () {
         track.style.transition = '';
-        locked = false;
-        wheelAccum = 0;
+        releaseLock();
         update();
       }, duration + 60);
 
@@ -2815,9 +2824,9 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
         var t = Math.min(1, (now - begin) / duration);
         window.scrollTo(0, Math.round(fromY + dist * easeOutQuart(t)));
         if (t < 1) { rafId = requestAnimationFrame(step); }
-        else { locked = false; update(); }
+        else { releaseLock(); update(); }
       })(begin);
-      lockTimer = setTimeout(function () { locked = false; wheelAccum = 0; }, duration + 80);
+      lockTimer = setTimeout(function () { releaseLock(); }, duration + 80);
     }
   }
 
@@ -2848,11 +2857,14 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
     clearTimeout(wheelResetTimer);
     wheelResetTimer = setTimeout(function () { wheelAccum = 0; }, 200);
 
-    // While locked, block native scroll but don't advance — let the animation finish
-    if (locked) return;
+    // While locked or in post-slide cooldown, discard input
+    if (locked || cooldown) return;
 
     wheelAccum += delta;
-    var THRESHOLD = 180;
+
+    // Mouse wheel sends large deltas (≥100px per notch in pixel mode) — fire immediately.
+    // Trackpad sends small deltas that must accumulate to 180px before firing.
+    var THRESHOLD = Math.abs(delta) >= 80 ? 1 : 180;
     if (Math.abs(wheelAccum) < THRESHOLD) return;
 
     var dir = wheelAccum > 0 ? 1 : -1;
