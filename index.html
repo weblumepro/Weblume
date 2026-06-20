@@ -2265,7 +2265,7 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   </div>
   <div class="team-grid stagger">
     <div class="team-card fade-up">
-      <img src="brian.png" alt="Brian Tran" class="team-photo" loading="lazy" decoding="async" onerror="this.style.display='none'">
+      <img src="brian.webp" alt="Brian Tran" class="team-photo" loading="eager" decoding="async" onerror="this.style.display='none'">
       <div class="team-info">
         <h3>Brian Tran</h3>
         <div class="team-role">Software Engineer</div>
@@ -2278,7 +2278,7 @@ footer p { font-size: 0.82rem; color: var(--muted); }
       </div>
     </div>
     <div class="team-card fade-up">
-      <img src="Zach.webp" alt="Zach Kranabetter" class="team-photo" loading="lazy" decoding="async" onerror="this.style.display='none'">
+      <img src="Zach.webp" alt="Zach Kranabetter" class="team-photo" loading="eager" decoding="async" onerror="this.style.display='none'">
       <div class="team-info">
         <h3>Zach Kranabetter</h3>
         <div class="team-role">Designer</div>
@@ -2756,7 +2756,8 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
   let locked = false;
   let lockTimer = null;
   let rafId = null;
-  let currentTarget = 0;  // tracks the intended anchor index so interruption doesn't skip slides
+  let currentTarget = 0;
+  let lastWheelTime = 0;
 
   // useCSS = true  → within-deck: page scroll is invisible (sticky stage stays put),
   //                   so we jump scrollY instantly and animate only the track via CSS.
@@ -2835,23 +2836,14 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
     var dir = ev.deltaY > 0 ? 1 : (ev.deltaY < 0 ? -1 : 0);
     if (dir === 0) return;
 
-    if (locked) {
-      var newTarget = currentTarget + dir;
-      cancelAnimationFrame(rafId);
-      clearTimeout(lockTimer);
-      locked = false;
-      if (newTarget < 0) {
-        ev.preventDefault();
-        currentTarget = -1;
-        animateScrollTo(Math.round(anchorsY[0] - vh), 260, false);
-        return;
-      }
-      if (newTarget >= anchorsY.length) return;
-      ev.preventDefault();
-      currentTarget = newTarget;
-      animateScrollTo(Math.round(anchorsY[newTarget]), newTarget === 4 ? 260 : 220, newTarget !== 4);
-      return;
-    }
+    // Ignore wheel events while a slide transition is in progress (prevents
+    // trackpad momentum from chaining rapid-fire slide jumps)
+    if (locked) { ev.preventDefault(); return; }
+
+    // Debounce: ignore bursts faster than 320ms (trackpad coasting)
+    var now = performance.now();
+    if (now - lastWheelTime < 320) { ev.preventDefault(); return; }
+    lastWheelTime = now;
 
     // Approaching from recent works: one scroll snaps to first slide
     if (y < anchorsY[0] - 1) {
