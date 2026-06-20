@@ -2807,7 +2807,10 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
       setOverlay(Math.min(SLIDES - 1, ci));
       if (progressFill) progressFill.style.width = (tp / span * 100).toFixed(2) + '%';
 
-      window.scrollTo(0, Math.round(toY));  // instant — invisible because sticky stage is fixed
+      // Must force 'instant' — the global `html { scroll-behavior: smooth }`
+      // would otherwise animate this, desyncing from the CSS track transition
+      // and snapping the track backward when the lock releases mid-scroll.
+      window.scrollTo({ top: Math.round(toY), behavior: 'instant' });  // invisible: sticky stage is fixed
 
       lockTimer = setTimeout(function () {
         track.style.transition = '';
@@ -2823,7 +2826,8 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
       var begin = performance.now();
       (function step(now) {
         var t = Math.min(1, (now - begin) / duration);
-        window.scrollTo(0, Math.round(fromY + dist * easeOutQuart(t)));
+        // 'instant' so the global smooth scroll-behavior doesn't fight the rAF easing.
+        window.scrollTo({ top: Math.round(fromY + dist * easeOutQuart(t)), behavior: 'instant' });
         if (t < 1) { rafId = requestAnimationFrame(step); }
         else { releaseLock(); update(); }
       })(begin);
@@ -2851,6 +2855,21 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
     if (ev.deltaMode === 1) delta *= 32;
     if (ev.deltaMode === 2) delta *= vh;
     if (delta === 0) return;
+
+    // Decide direction + closest anchor BEFORE consuming the event.
+    var dir0 = delta > 0 ? 1 : -1;
+    var cur0 = 0, bestD0 = Infinity;
+    for (var k = 0; k < anchorsY.length; k++) {
+      var dd0 = Math.abs(anchorsY[k] - y);
+      if (dd0 < bestD0) { bestD0 = dd0; cur0 = k; }
+    }
+
+    // Exit gestures: never trap the wheel at a boundary. If we're already at
+    // the first slide and scrolling up (→ Partners), or at the last anchor and
+    // scrolling down (→ Reviews/below), let the browser scroll natively so
+    // scrollY can leave the deck's guard band.
+    if (dir0 < 0 && cur0 === 0) return;
+    if (dir0 > 0 && cur0 === anchorsY.length - 1) return;
 
     ev.preventDefault();
 
