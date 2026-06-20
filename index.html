@@ -2762,13 +2762,14 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
   let wheelResetTimer = null;
   let cooldown = false;
   let cooldownTimer = null;
+  let lastSnapDir = 0; // direction of last snap; clears after 200ms pause
 
   function releaseLock() {
     locked = false;
     wheelAccum = 0;
     cooldown = true;
     clearTimeout(cooldownTimer);
-    cooldownTimer = setTimeout(function () { cooldown = false; }, 50);
+    cooldownTimer = setTimeout(function () { cooldown = false; }, 600);
   }
 
   // useCSS = true  → within-deck: page scroll is invisible (sticky stage stays put),
@@ -2853,9 +2854,9 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
 
     ev.preventDefault();
 
-    // Reset accumulator after a 200ms scroll pause so momentum doesn't carry over
+    // Reset accumulator and direction lock after 200ms of no events
     clearTimeout(wheelResetTimer);
-    wheelResetTimer = setTimeout(function () { wheelAccum = 0; }, 200);
+    wheelResetTimer = setTimeout(function () { wheelAccum = 0; lastSnapDir = 0; }, 200);
 
     // While locked or in post-slide cooldown, discard input
     if (locked || cooldown) return;
@@ -2863,12 +2864,17 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
     wheelAccum += delta;
 
     // Mouse wheel sends large deltas (≥100px per notch in pixel mode) — fire immediately.
-    // Trackpad sends small deltas that must accumulate to 180px before firing.
-    var THRESHOLD = Math.abs(delta) >= 80 ? 1 : 180;
+    // Trackpad accumulates to 80px — above typical post-pause residual (10–30px).
+    var THRESHOLD = Math.abs(delta) >= 80 ? 1 : 80;
     if (Math.abs(wheelAccum) < THRESHOLD) return;
 
     var dir = wheelAccum > 0 ? 1 : -1;
     wheelAccum = 0; // reset immediately so a single gesture can't fire twice
+
+    // Reject direction reversals caused by mechanical wheel bounce or inertia flicker.
+    // lastSnapDir clears after a genuine 200ms event pause so deliberate reversal works.
+    if (lastSnapDir !== 0 && dir !== lastSnapDir) return;
+    lastSnapDir = dir;
 
     // Approaching from recent works: snap to first slide
     if (y < anchorsY[0] - 1) {
