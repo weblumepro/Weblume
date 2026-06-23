@@ -3288,6 +3288,18 @@
         .t-avatar {
           display: none;
         }
+        /* Stack name / company / location on their own centered lines */
+        .t-name,
+        .t-loc {
+          text-align: center;
+        }
+        .t-company,
+        .t-place {
+          display: block;
+        }
+        .t-sep {
+          display: none;
+        }
         .t-nav {
           margin-top: 1.8rem;
         }
@@ -3772,7 +3784,7 @@
                 <div>
                   <p class="t-name">David C.</p>
                   <p class="t-loc">
-                    Pagoda Restaurant &nbsp;·&nbsp; Kirkland Lake, CA
+                    <span class="t-company">Pagoda Restaurant</span><span class="t-sep">&nbsp;·&nbsp;</span><span class="t-place">Kirkland Lake, CA</span>
                   </p>
                 </div>
               </div>
@@ -3788,7 +3800,7 @@
                 <div class="t-avatar">GH</div>
                 <div>
                   <p class="t-name">Judy D.</p>
-                  <p class="t-loc">Glow Hour Matcha &nbsp;·&nbsp; Ottawa, CA</p>
+                  <p class="t-loc"><span class="t-company">Glow Hour Matcha</span><span class="t-sep">&nbsp;·&nbsp;</span><span class="t-place">Ottawa, CA</span></p>
                 </div>
               </div>
             </div>
@@ -3800,7 +3812,7 @@
           <div class="t-avatar">IK</div>
           <div>
             <p class="t-name">Michelle T.</p>
-            <p class="t-loc">Ink Kitchen &nbsp;·&nbsp; Ottawa, CA</p>
+            <p class="t-loc"><span class="t-company">Ink Kitchen</span><span class="t-sep">&nbsp;·&nbsp;</span><span class="t-place">Ottawa, CA</span></p>
           </div>
         </div>
       </div>
@@ -4591,7 +4603,25 @@
         const stats = document.querySelector(".stats-section");
         if (!zone || !fixed || !canvas) return;
 
-        if (window.matchMedia("(max-width: 700px)").matches) return;
+        const heroMQ = window.matchMedia("(max-width: 700px)");
+        // On mobile the hero is a normal in-flow block — never a fixed overlay.
+        // Force it inline so a stale/failed `position: relative` CSS override can't
+        // leave the opaque hero pinned over the viewport (which blocks scrolling
+        // past it). Inline styles outrank any stylesheet, cached or otherwise.
+        function applyHeroStatic() {
+          fixed.style.position = "relative";
+          fixed.style.display = "block";
+          fixed.style.zIndex = "auto";
+          fixed.style.inset = "auto";
+        }
+        if (heroMQ.matches) {
+          applyHeroStatic();
+          // Re-assert if the viewport later crosses the breakpoint.
+          heroMQ.addEventListener("change", function (e) {
+            if (e.matches) applyHeroStatic();
+          });
+          return;
+        }
 
         const ctx = canvas.getContext("2d");
         const frames = new Array(TOTAL);
