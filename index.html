@@ -3304,6 +3304,57 @@
           margin-top: 1.8rem;
         }
       }
+
+      /* Landscape phones (wider than 700px but short): the desktop fixed-overlay
+         hero would pin and block scrolling, so use the static in-flow hero here
+         too, and collapse the nav to the hamburger like the rest of mobile. */
+      @media (orientation: landscape) and (max-height: 500px) {
+        nav.main-nav {
+          padding: 1rem 1.25rem;
+        }
+        .nav-links,
+        .nav-cta {
+          display: none;
+        }
+        .hamburger {
+          display: flex;
+        }
+
+        .hero-zone {
+          display: none;
+        }
+        .hero-fixed {
+          position: relative;
+          height: calc(100svh - 70px);
+          min-height: 0;
+          background-position: 60% 38%;
+        }
+        #heroCanvas,
+        .hero-white {
+          display: none;
+        }
+        .hero-left-shade {
+          width: 100%;
+          background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.66) 0%,
+            rgba(0, 0, 0, 0.28) 55%,
+            rgba(0, 0, 0, 0.34) 100%
+          );
+        }
+        .hero-content {
+          width: 100%;
+          justify-content: flex-end;
+          padding: 0 1.5rem 2rem;
+        }
+        .hero-heading {
+          font-size: 2rem;
+        }
+        .hero-sub {
+          font-size: 0.95rem;
+          max-width: 100%;
+        }
+      }
     </style>
   </head>
   <body>
@@ -4603,25 +4654,15 @@
         const stats = document.querySelector(".stats-section");
         if (!zone || !fixed || !canvas) return;
 
-        const heroMQ = window.matchMedia("(max-width: 700px)");
-        // On mobile the hero is a normal in-flow block — never a fixed overlay.
-        // Force it inline so a stale/failed `position: relative` CSS override can't
-        // leave the opaque hero pinned over the viewport (which blocks scrolling
-        // past it). Inline styles outrank any stylesheet, cached or otherwise.
-        function applyHeroStatic() {
-          fixed.style.position = "relative";
-          fixed.style.display = "block";
-          fixed.style.zIndex = "auto";
-          fixed.style.inset = "auto";
-        }
-        if (heroMQ.matches) {
-          applyHeroStatic();
-          // Re-assert if the viewport later crosses the breakpoint.
-          heroMQ.addEventListener("change", function (e) {
-            if (e.matches) applyHeroStatic();
-          });
+        // Desktop-only scrollytelling. Phones use the static in-flow hero from
+        // CSS instead — both portrait (≤700px wide) and landscape (a short
+        // landscape viewport), so the hero shows and can be scrolled past.
+        if (
+          window.matchMedia(
+            "(max-width: 700px), (orientation: landscape) and (max-height: 500px)",
+          ).matches
+        )
           return;
-        }
 
         const ctx = canvas.getContext("2d");
         const frames = new Array(TOTAL);
