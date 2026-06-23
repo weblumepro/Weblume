@@ -1840,8 +1840,9 @@ footer p { font-size: 0.82rem; color: var(--muted); }
   .step-lead { font-size: 0.98rem; margin-bottom: 1.2rem; max-width: 100%; }
   .step-cta { margin-top: 1.4rem; }
 
-  /* Trim the empty gap between reviews and the CTA */
-  .testimonials-section { height: auto; min-height: auto; padding: 4rem 2rem 3rem; }
+  /* Trim the empty gap between reviews and the CTA.
+     min-height gives the cover background a defined band; ~60vh natural → 72vh = +20%. */
+  .testimonials-section { height: auto; min-height: 72vh; padding: 4rem 2rem 3rem; }
   .testimonials-section::after { height: 160px; }
   .t-eyebrow { margin-bottom: 2.25rem; }
   .t-nav { margin-top: 2.25rem; }
