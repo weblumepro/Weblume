@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <!-- Google Analytics 4 -->
     <script
       async
@@ -3309,8 +3312,11 @@
          hero would pin and block scrolling, so use the static in-flow hero here
          too, and collapse the nav to the hamburger like the rest of mobile. */
       @media (orientation: landscape) and (max-height: 500px) {
+        /* Compact, notch-safe nav so it no longer eats a big chunk of the
+           short hero on load. Padding matches .page padding-top below. */
         nav.main-nav {
-          padding: 1rem 1.25rem;
+          padding: 0.45rem max(1.25rem, env(safe-area-inset-right)) 0.45rem
+            max(1.25rem, env(safe-area-inset-left));
         }
         .nav-links,
         .nav-cta {
@@ -3319,13 +3325,16 @@
         .hamburger {
           display: flex;
         }
+        .page {
+          padding-top: 46px;
+        }
 
         .hero-zone {
           display: none;
         }
         .hero-fixed {
           position: relative;
-          height: calc(100svh - 70px);
+          height: calc(100svh - 46px);
           min-height: 0;
           background-position: 60% 38%;
         }
@@ -3345,7 +3354,8 @@
         .hero-content {
           width: 100%;
           justify-content: flex-end;
-          padding: 0 1.5rem 2rem;
+          padding: 0 max(1.5rem, env(safe-area-inset-right)) 1.5rem
+            max(1.5rem, env(safe-area-inset-left));
         }
         .hero-heading {
           font-size: 2rem;
@@ -3353,6 +3363,78 @@
         .hero-sub {
           font-size: 0.95rem;
           max-width: 100%;
+        }
+
+        /* Recent work — taller so the coverflow has room to breathe */
+        .work-preview-section {
+          height: 150svh;
+        }
+
+        /* How it works — deck JS bails in landscape, so slides stack; give
+           them generous vertical spacing */
+        .hiw-slide {
+          min-height: auto;
+          padding: 4.5rem 8%;
+          border-bottom: 1px solid rgba(60, 40, 22, 0.1);
+        }
+        .hiw-slide:last-child {
+          border-bottom: none;
+        }
+        .hiw-intro .hiw-inner {
+          text-align: left;
+          margin: 0;
+        }
+        .hiw-scrollhint {
+          display: none;
+        }
+
+        /* Reviews — much smaller text, no avatar, and a narrow centered column
+           so the quote wraps onto more lines and stays inside the card instead
+           of spilling past the image on both sides. */
+        .testimonials-section {
+          height: auto;
+          min-height: 100svh;
+          padding: 2rem;
+        }
+        .t-slides {
+          max-width: 340px;
+        }
+        .t-eyebrow {
+          font-size: 0.55rem;
+          margin-bottom: 0.7rem;
+        }
+        .t-quote-mark {
+          font-size: 2.6rem;
+          margin-bottom: 0.2rem;
+        }
+        .t-text {
+          font-size: 0.82rem;
+          line-height: 1.4;
+          max-width: 300px;
+          margin: 0 auto 0.9rem;
+        }
+        .t-avatar {
+          display: none;
+        }
+        .t-name {
+          font-size: 0.8rem;
+        }
+        .t-loc {
+          font-size: 0.68rem;
+        }
+        .t-name,
+        .t-loc {
+          text-align: center;
+        }
+        .t-company,
+        .t-place {
+          display: block;
+        }
+        .t-sep {
+          display: none;
+        }
+        .t-nav {
+          margin-top: 0.9rem;
         }
       }
     </style>
@@ -4778,7 +4860,14 @@
 
       // --- Pinned horizontal "How it works" deck (desktop only) ---
       (function () {
-        if (window.matchMedia("(max-width: 700px)").matches) return;
+        // Phones (portrait or short landscape) stack the deck instead of the
+        // desktop horizontal pinned scroll.
+        if (
+          window.matchMedia(
+            "(max-width: 700px), (orientation: landscape) and (max-height: 500px)",
+          ).matches
+        )
+          return;
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
           return;
 
